@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mapButton;
     private Button serviceButton;
+    private Button gotologinButton;
     private LocationService locationService;
     private boolean bound=false;
     private TextView startcountview;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         final Intent intent = new Intent(this, MapsActivity.class);
         final Intent startservice;
+        final Intent loginIntent = new Intent(this, LoginActivity.class);
         startservice = new Intent(this, LocationService.class);
 
         mapButton = (Button) findViewById(R.id.map);
@@ -55,6 +57,14 @@ public class MainActivity extends AppCompatActivity {
                 if (bound) {
                     startcountview.setText(Integer.toString(locationService.getStartcount()));
                 }
+            }
+        });
+        gotologinButton = findViewById(R.id.gotologinbutton);
+        gotologinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(loginIntent);
+
             }
         });
     }

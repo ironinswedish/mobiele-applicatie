@@ -23,11 +23,16 @@ import android.widget.Toast;
 
 import android.os.Handler;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class LocationService extends Service {
 
     private boolean isRunning;
     private boolean noPermission;
+    private Timer timer;
     private int startcount;
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
@@ -159,6 +164,7 @@ public class LocationService extends Service {
         locate = true;
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+        timer = new Timer();
         HandlerThread thread = new HandlerThread("ServiceStartArguments", Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
         mServiceLooper = thread.getLooper();
@@ -193,10 +199,21 @@ public class LocationService extends Service {
 
 
         if (!isRunning) {
+            isRunning = true;
+            Log.d("location", "this is something");
             Message msg = mServiceHandler.obtainMessage();
             msg.arg1 = startId;
             mServiceHandler.sendMessage(msg);
+            /*TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    Log.e("location", "do location shizzle");
+                    getCurrentLocation();
+                }
+            };*/
+
             doSomething();
+            //timer.schedule(timerTask, new Date(), 5000);
         }
 
         return START_STICKY;
