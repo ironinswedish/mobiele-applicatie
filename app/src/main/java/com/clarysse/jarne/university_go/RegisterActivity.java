@@ -80,8 +80,10 @@ public class RegisterActivity extends AppCompatActivity {
                 } else {
                     if(characterSwitch.isChecked()){
                         characterImage.setImageResource(R.drawable.female2);
+
                     }
                     else{
+
                         characterImage.setImageResource(R.drawable.male2);
                     }
 
