@@ -1,5 +1,8 @@
 package com.clarysse.jarne.university_go;
 
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
@@ -24,4 +27,7 @@ public interface ApiCallsInterface {
     //@POST("/login")
 
     //@POST("/google_login")
+
+    @POST("user")
+    Call<String> register(@Body JSONObject userInfo);
 }

@@ -160,6 +160,7 @@ public class DatabaseService extends Service {
             String ip2 = "10.108.19.9";
 
             apiCallsInterface.updateunimon(gson.toJson(modifiedUnimon).toString());
+
             /*try {
                 URL url = new URL("http://10.108.19.9:5000/updateunimon");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();

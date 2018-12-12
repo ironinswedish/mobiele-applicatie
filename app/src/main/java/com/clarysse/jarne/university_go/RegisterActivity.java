@@ -14,9 +14,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -26,8 +30,16 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -35,6 +47,10 @@ public class RegisterActivity extends AppCompatActivity {
     private Switch raceSwitch;
     private ImageView characterImage;
     private Button registerButton;
+
+    private ApiCallsInterface apiCallsInterface;
+    private Retrofit retrofit;
+    String ip2 = "http://10.0.2.2:5000/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +115,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int result =register();
-                if(result==0){
+                /*if(result==0){
                 startActivity(intent);
                 }
                 else if(result ==-1){
@@ -109,26 +125,48 @@ public class RegisterActivity extends AppCompatActivity {
                     toast.show();
                 }
                 else{
-                    CharSequence message = "Something went wrong.";
+                    System.out.println(result+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                    CharSequence message = "Something went wrong. This is updated";
 
                     Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
                     toast.show();
-                }
+                }*/
             }
         });
     }
 
+
+    private void handleRegister(int result){
+        Intent intent = new Intent(this, MainMenuActivity.class);
+        if(result==0){
+            startActivity(intent);
+        }
+        else if(result ==-1){
+            CharSequence message = "Email adress already in use.";
+
+            Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else{
+            System.out.println(result+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+            CharSequence message = "Something went wrong. This is updated";
+
+            Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
     private int register(){
         //register
-        AsyncTask<String, Void, Integer> r = new RegisterTask().execute();
+        AsyncTask<String, Void, Integer> r = new RegisterTask2().execute();
 
         try {
             return r.get();
 
         } catch (ExecutionException e) {
-            return -1;
+            return -2;
         } catch (InterruptedException e) {
-            return -1;
+            return -2;
         }
 
     }
@@ -171,98 +209,95 @@ public class RegisterActivity extends AppCompatActivity {
         return salt;
     }
 
-    public class RegisterTask extends AsyncTask<String, Void, Integer> {
+
+    public class RegisterTask2 extends AsyncTask<String, Void, Integer> {
         @Override
         protected Integer doInBackground(String... strings) {
 
+            retrofit = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create()).baseUrl(ip2).build();
+            apiCallsInterface = retrofit.create(ApiCallsInterface.class);
+
             TextView register_username_field = findViewById(R.id.register_username_field);
-            String username = ""+ register_username_field.getText();
+            String username = "" + register_username_field.getText();
 
             TextView passwordfield = findViewById((R.id.register_password_field));
-            String password = ""+ passwordfield.getText();
+            String password = "" + passwordfield.getText();
             byte[] salt = new byte[0];
             try {
-                salt=getSalt();
+                salt = getSalt();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             } catch (NoSuchProviderException e) {
                 e.printStackTrace();
             }
-            String hashedPassword = getSecurePassword(password,salt);
+            String hashedPassword = getSecurePassword(password, salt);
             String saltString = new String(salt);
 
             TextView emailfield = findViewById(R.id.register_email_field);
-            String email = ""+ emailfield.getText();
+            String email = "" + emailfield.getText();
 
             //Decide the sprite (kijk da rijmt)
-            String sprite="male1";
-            if(raceSwitch.isChecked()){
-                if(characterSwitch.isChecked()){
-                    sprite="female1";
-                }
-                else{
-                    sprite="male1";
+            String sprite = "male1";
+            if (raceSwitch.isChecked()) {
+                if (characterSwitch.isChecked()) {
+                    sprite = "female1";
+                } else {
+                    sprite = "male1";
                 }
             } else {
-                if(characterSwitch.isChecked()){
-                    sprite="female2";
-                }
-                else{
-                    sprite="male2";
+                if (characterSwitch.isChecked()) {
+                    sprite = "female2";
+                } else {
+                    sprite = "male2";
                 }
             }
-
 
 
             Map<String, String> param = new HashMap<>();
             param.put("username", username);
-            param.put("email",email);
+            param.put("email", email);
             param.put("password", hashedPassword);
-            param.put("sprite_type",sprite);
-            param.put("cubecount","10");
-            param.put("salt",""+saltString);
+            param.put("sprite_type", sprite);
+            param.put("cubecount", "10");
+            param.put("salt", "" + saltString);
 
             JSONObject credObject = new JSONObject(param);
-            try {
-                URL url = new URL("http://10.0.2.2:5000/user");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
 
-                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                conn.setRequestProperty("Accept", "application/json");
 
-                OutputStream os = conn.getOutputStream();
-                os.write(credObject.toString().getBytes("UTF-8"));
-                os.close();
-                StringBuilder sb = new StringBuilder();
-                int HttpResult = conn.getResponseCode();
-                System.out.println("ANTWOORD "+HttpResult);
-                if (HttpResult == HttpURLConnection.HTTP_OK) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-                    String line = null;
-                    while ((line = br.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    br.close();
-                    Log.e("registerTask", "response " + sb.toString());
-                } else {
-                    String message=conn.getResponseMessage();
-                    Log.e("registerTask", "response " + message);
-                    if(message.equals("CREATED")){
-                        return 0;
-                    }
-                    else if(message.equals("CONFLICT")){
-                        return -1;
+
+            //Call<String> registerCall =apiCallsInterface.register(credObject);
+
+
+            apiCallsInterface.register(credObject).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+
+                    if (response.isSuccessful()) {
+                        String result;
+                        result=response.body();
+                        if(result.equals("Tis ok")){
+                            System.out.println("Status is op nul gezet");
+                            handleRegister(0);
+                        }
+                        else{
+
+                            handleRegister(-1);
+                        }
+
+                        Log.i("Register", "Registered! Here is the body: " + response.body());
                     }
                 }
-                return 0;
-            } catch (Exception e) {
-                Log.e("registerTask", "something went wrong", e);
-                return 1;
-            }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    handleRegister(-2);
+                    Log.e("Register", "Unable to get the data from python");
+                }
+            });
+
+            return 0;
+
+
         }
     }
-
 }
