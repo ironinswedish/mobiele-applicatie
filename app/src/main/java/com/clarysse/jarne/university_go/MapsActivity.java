@@ -189,9 +189,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
             eventMarkerList = new ArrayList<Marker>();
-            for (Event event : events) {
+            /*for (Event event : events) {
                 eventMarkerList.add(mMap.addMarker(new MarkerOptions().position(event.getLocation()).title(event.getEventName() + "\n" + "level: " + event.getLevel()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
-            }
+            }*/
         }
     }
 

@@ -75,7 +75,7 @@
         android:hint="Bart.Com"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.89"
+        app:layout_constraintHorizontal_bias="0.888"
         app:layout_constraintStart_toEndOf="@+id/emaillabel"
         app:layout_constraintTop_toBottomOf="@+id/usernamesettingsfield" />
 

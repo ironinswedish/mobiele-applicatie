@@ -69,7 +69,7 @@ public class EventService extends Service {
             double foundLongitude = y + y0;
             LatLng randomLatLng = new LatLng(foundLatitude, foundLongitude);
             String name = "funny event "+i;
-            nearbyEventList.add(new Event(randomLatLng, name, random.nextInt(50)));
+            //nearbyEventList.add(new Event());
         }
     }
 

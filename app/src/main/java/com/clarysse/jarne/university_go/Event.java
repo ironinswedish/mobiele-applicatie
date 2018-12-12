@@ -1,40 +1,113 @@
 package com.clarysse.jarne.university_go;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 
-
+@Entity
 public class Event {
 
-    private LatLng location;
-    private String eventName;
-    private int level;
+    @NonNull
+    @PrimaryKey(autoGenerate = true)
+    private int eventid;
 
-    public Event(LatLng location, String eventName, int level) {
-        this.level = level;
-        this.eventName = eventName;
-        this.location = location;
+    private String naam;
+    private String type;
+    private String tags;
+    private String beschrijving;
+    private int sprite;
+    private String moveset;
+    private int spawn_rate;
+    private int base_health;
+
+
+    @NonNull
+    public int getEventid() {
+        return eventid;
     }
 
-    public LatLng getLocation() {
-        return location;
+    public void setEventid(@NonNull int eventid) {
+        this.eventid = eventid;
     }
 
-    public void setLocation(LatLng location) {
-        this.location = location;
+    public String getNaam() {
+        return naam;
     }
 
-    public String getEventName() {
-        return eventName;
+    public void setNaam(String naam) {
+        this.naam = naam;
     }
 
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
+    public String getType() {
+        return type;
     }
 
-    public int getLevel() {
-        return level;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public String getBeschrijving() {
+        return beschrijving;
+    }
+
+    public void setBeschrijving(String beschrijving) {
+        this.beschrijving = beschrijving;
+    }
+
+    public int getSprite() {
+        return sprite;
+    }
+
+    public void setSprite(int sprite) {
+        sprite = sprite;
+    }
+
+    public String getMoveset() {
+        return moveset;
+    }
+
+    public void setMoveset(String moveset) {
+        this.moveset = moveset;
+    }
+
+    public int getSpawn_rate() {
+        return spawn_rate;
+    }
+
+    public void setSpawn_rate(int spawn_rate) {
+        this.spawn_rate = spawn_rate;
+    }
+
+    public int getBase_health() {
+        return base_health;
+    }
+
+    public void setBase_health(int base_health) {
+        this.base_health = base_health;
+    }
+
+    public Event(@NonNull int eventid, String naam, String type, String tags, String beschrijving, int sprite, String moveset, int spawn_rate, int base_health) {
+        this.eventid = eventid;
+        this.naam = naam;
+        this.type = type;
+        this.tags = tags;
+        this.beschrijving = beschrijving;
+        this.sprite = sprite;
+        this.moveset = moveset;
+        this.spawn_rate = spawn_rate;
+        this.base_health = base_health;
+    }
+
+    public Event(){
+
     }
 }
