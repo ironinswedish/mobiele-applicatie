@@ -10,21 +10,33 @@
         android:id="@+id/settingscharacter"
         android:layout_width="139dp"
         android:layout_height="131dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/male_sprite" />
+        app:srcCompat="@drawable/male2" />
 
     <Switch
         android:id="@+id/settingscharacterswitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:text="M/F"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingscharacter" />
+
+    <Switch
+        android:id="@+id/settingsraceswitch2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Skin Tone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.441"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settingscharacter" />
 
@@ -44,7 +56,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="40dp"
         android:text="Username: "
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,9 +66,9 @@
         android:id="@+id/usernamesettingsfield"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="Bart"
         android:inputType="textPersonName"
