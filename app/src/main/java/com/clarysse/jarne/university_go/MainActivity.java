@@ -84,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    public void sendMessage(View view) {
+        System.out.println("Gewoon een test");
+    }
+
     @Override
     protected void onDestroy() {
         Intent startservice;
