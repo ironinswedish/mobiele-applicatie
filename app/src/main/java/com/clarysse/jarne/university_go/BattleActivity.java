@@ -24,7 +24,10 @@ public class BattleActivity extends AppCompatActivity {
 
         nicknamefoe = findViewById(R.id.nicknamefoe);
         nicknamefoe.setText(encounter.getEvent().getNaam());
+        progressBarfoe = findViewById(R.id.progressbarfoe);
+        progressBarfoe.setProgress(encounter.getEvent().getBase_health() * encounter.getUnimon().getLevel() / 50);
 
 
     }
+    
 }
