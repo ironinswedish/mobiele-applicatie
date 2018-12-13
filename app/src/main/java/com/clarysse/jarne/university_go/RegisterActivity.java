@@ -2,6 +2,7 @@ package com.clarysse.jarne.university_go;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,9 +138,16 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    private void handleRegister(int result){
+    private void handleRegister(int result,String token){
+
+
+
+
         Intent intent = new Intent(this, MainMenuActivity.class);
         if(result==0){
+            SharedPreferences sp;
+            sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            sp.edit().putStringSet("token", Collections.singleton(token));
             startActivity(intent);
         }
         else if(result ==-1){
@@ -230,8 +239,14 @@ public class RegisterActivity extends AppCompatActivity {
             } catch (NoSuchProviderException e) {
                 e.printStackTrace();
             }
-            String hashedPassword = getSecurePassword(password, salt);
+
+
             String saltString = new String(salt);
+            String hashedPassword = getSecurePassword(password, saltString.getBytes());
+            String hashedPassword3 = getSecurePassword(password, new String(saltString.getBytes()).getBytes());
+            String hashedPassword2 = getSecurePassword(password, salt);
+
+            System.out.println("VERGELIJKING: "+hashedPassword+" EN "+hashedPassword2+ " EN "+hashedPassword3);
 
             TextView emailfield = findViewById(R.id.register_email_field);
             String email = "" + emailfield.getText();
@@ -275,22 +290,23 @@ public class RegisterActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         String result;
                         result=response.body();
-                        if(result.equals("Tis ok")){
-                            System.out.println("Status is op nul gezet");
-                            handleRegister(0);
+                        String[] results = result.split("-");
+                        if(results[0].equals("Tis ok")){
+                            System.out.println("Status is op nul gezet"+results[1]);
+                            handleRegister(0,results[1]);
                         }
                         else{
 
-                            handleRegister(-1);
+                            handleRegister(-1,null);
                         }
 
-                        Log.i("Register", "Registered! Here is the body: " + response.body());
+                        Log.e("Register", "Registered! Here is the body: " + response.body());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    handleRegister(-2);
+                    handleRegister(-2,null);
                     Log.e("Register", "Unable to get the data from python");
                 }
             });

@@ -1,7 +1,6 @@
 package com.clarysse.jarne.university_go;
 
 import android.content.Intent;
-import android.graphics.PostProcessor;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -21,22 +21,24 @@ import com.google.android.gms.tasks.Task;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+
 
 public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
@@ -45,6 +47,10 @@ public class LoginActivity extends AppCompatActivity {
     private Button logoutButton;
     private Button loginButton;
     private Button registerButton;
+
+    private ApiCallsInterface apiCallsInterface;
+    private Retrofit retrofit;
+    String ip2 = "http://10.0.2.2:5000/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +89,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 login();
+
             }
         });
         final Intent intent = new Intent(this, RegisterActivity.class);
@@ -108,7 +115,32 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(){
         //inloggen
-        new LoginTask().execute();
+        int result=410;
+        AsyncTask<String, Void, Integer> r =new LoginTask().execute();
+        try {
+            result= r.get();
+            System.out.println(result+" DIT IS HET RESULT");
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(result==201){
+            Intent intent = new Intent(this, MainMenuActivity.class);
+            startActivity(intent);
+        }
+        else if(result == 409){
+            CharSequence message = "Wrong password or email adres";
+
+            Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else{
+            CharSequence message = "Something went wrong. Error code: "+result;
+
+            Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
     private void signIn() {
@@ -249,6 +281,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e("loginTask", "response " + sb.toString());
                 } else {
                     Log.e("loginTask", "response " + conn.getResponseMessage());
+                    System.out.println(conn.getResponseCode());
                 }
                 return 0;
             } catch (Exception e) {
@@ -269,25 +302,55 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public String hashPasword(String pass) {
-        return pass;
+    private String getSecurePassword(String passwordToHash, byte[] salt)
+    {
+        String generatedPassword = null;
+        try {
+            // Create MessageDigest instance for MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            //Add password bytes to digest
+            md.update(salt);
+            //Get the hash's bytes
+            byte[] bytes = md.digest(passwordToHash.getBytes());
+            //This bytes[] has bytes in decimal format;
+            //Convert it to hexadecimal format
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            //Get complete hashed password in hex format
+            generatedPassword = sb.toString();
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return generatedPassword;
     }
 
     public class LoginTask extends AsyncTask<String, Void, Integer> {
         @Override
         protected Integer doInBackground(String... strings) {
+
             TextView userfield = findViewById(R.id.username_field);
-            String username = (String) userfield.getText();
+            String username = ""+ userfield.getText();
+
+            byte[] salt =getSaltFromServer(username);
+            System.out.println(new String(salt));
+
             TextView passwordfield = findViewById((R.id.password_field));
-            String password = (String) passwordfield.getText();
-            String hashedPassword = hashPasword(password);
+            String password = ""+ passwordfield.getText();
+            String hashedPassword = getSecurePassword(password,salt);
+
+            System.out.println(hashedPassword+ " is het hashed password");
+
             Map<String, String> param = new HashMap<>();
-            param.put("username", username);
+            param.put("email", username);
             param.put("password", hashedPassword);
 
             JSONObject credObject = new JSONObject(param);
             try {
-                URL url = new URL("http://192.168.1.10:5000/login");
+                URL url = new URL("http://10.0.2.2:5000/login");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
@@ -308,15 +371,64 @@ public class LoginActivity extends AppCompatActivity {
                         sb.append(line + "\n");
                     }
                     br.close();
-                    Log.e("loginTask", "response " + sb.toString());
+                    Log.e("loginTask", "response1 " + sb.toString());
                 } else {
-                    Log.e("loginTask", "response " + conn.getResponseMessage());
+                    Log.e("loginTask", "response2 " + conn.getResponseMessage());
+                    return conn.getResponseCode();
                 }
                 return 0;
             } catch (Exception e) {
                 Log.e("loginTask", "something went wrong", e);
-                return 1;
+                return 410;
             }
+        }
+    }
+
+    private byte[] getSaltFromServer(String username) {
+
+        retrofit = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create()).baseUrl(ip2).build();
+        apiCallsInterface = retrofit.create(ApiCallsInterface.class);
+
+        Map<String, String> param = new HashMap<>();
+        param.put("email", username);
+
+        JSONObject credObject = new JSONObject(param);
+
+        try {
+            URL url = new URL("http://10.0.2.2:5000/getsalt");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setRequestProperty("Accept", "application/json");
+
+            OutputStream os = conn.getOutputStream();
+            os.write(credObject.toString().getBytes("UTF-8"));
+            os.close();
+            StringBuilder sb = new StringBuilder();
+            int HttpResult = conn.getResponseCode();
+            if (HttpResult == HttpURLConnection.HTTP_OK) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                }
+                br.close();
+                Log.e("loginTask", "response " + sb.toString());
+                System.out.println(sb.toString()+ " DIT IS DEN SB JA WAT");
+                String s =sb.toString();
+                return s.getBytes();
+
+            } else {
+                String s = conn.getResponseMessage();
+                Log.e("saltTask", "iepresponse " + s);
+                return s.getBytes();
+            }
+        } catch (Exception e) {
+            Log.e("loginTask", "something went wrong", e);
+            return new byte[0];
         }
     }
 

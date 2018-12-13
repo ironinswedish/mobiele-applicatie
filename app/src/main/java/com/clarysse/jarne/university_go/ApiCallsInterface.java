@@ -30,4 +30,10 @@ public interface ApiCallsInterface {
 
     @POST("user")
     Call<String> register(@Body JSONObject userInfo);
+
+    @POST("login")
+    Call<String> login(@Body JSONObject userInfo);
+
+    @POST("getsalt")
+    Call<String> getsalt(@Body JSONObject email);
 }
