@@ -199,6 +199,7 @@ public class LoginActivity extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            System.out.println("\na\na\na\na\na\na\na\na\na\na\na\na\na\na");
             String idToken = account.getIdToken();
             Log.e("token", idToken);
             new TaskGoogleLogin().execute(idToken);
@@ -284,12 +285,21 @@ public class LoginActivity extends AppCompatActivity {
                     BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
                     String line = null;
                     while ((line = br.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
                     }
                     br.close();
                     Log.e("loginTask", "response " + sb.toString());
+                    if(sb.toString().equals("200 OK")){
+                        Log.e("loginTask", "response )))))))))))))))))))))))))))))))))))))" + conn.getResponseMessage());
+                    }
+                    else if(sb.toString().equals("404 NO USER")){
+                        Log.e("loginTask", "response ))))))))))))))))))))))))))))))))))))))))" + conn.getResponseMessage());
+                    }
+                    else{
+                        Log.e("loginTask", "response ))))))))))))))))))))))))))))))))))))))))))" + conn.getResponseMessage());
+                    }
                 } else {
-                    Log.e("loginTask", "response " + conn.getResponseMessage());
+                    Log.e("loginTask", "response )))))))))))))))))))))))))))))))))))))))))))))))" + conn.getResponseMessage());
                     System.out.println(conn.getResponseCode());
                 }
                 return 0;

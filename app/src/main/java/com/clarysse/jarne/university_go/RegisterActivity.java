@@ -296,7 +296,6 @@ public class RegisterActivity extends AppCompatActivity {
                             handleRegister(0,results[1]);
                         }
                         else{
-
                             handleRegister(-1,null);
                         }
 
