@@ -24,6 +24,14 @@ public interface ApiCallsInterface {
     @POST("updateunimon")
     Call<String> updateunimon(@Body String unimons);
 
+    @GET("getupdatemove/{latestupdate}")
+    Call<List<Move>> getLatestMoves(@Path("latestupdate") String latestupdate);
+
+    @GET("getupdateevent/{latestupdate}")
+    Call<List<Event>> getLatestEvents(@Path("latestupdate") String latestupdate);
+
+
+
     //@POST("/login")
 
     //@POST("/google_login")

@@ -24,14 +24,17 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 11;
@@ -42,6 +45,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean eventbound = false;
     private Thread locationUpdater;
     private boolean locationbound = false;
+    private HashMap<Marker, Encounter> markerMap;
 
     private Marker locationMarker;
     private ArrayList<Marker> eventMarkerList;
@@ -68,8 +72,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             bindService(startservice, eventConnection, Context.BIND_AUTO_CREATE);
 
         }
+        markerMap = new HashMap<>();
+
 
     }
+
+
 
 
     @Override
@@ -98,6 +106,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         locationLoop();
         eventLoop();
+
+        mMap.setOnMarkerClickListener(this);
     }
 
     public void locationLoop() {
@@ -148,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void eventLoop() {
+    public synchronized void eventLoop() {
         locationUpdater = new Thread() {
             @Override
             public void run() {
@@ -159,7 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             @Override
                             public void run() {
                                 if (eventbound) {
-                                    ArrayList<Event> events = eventService.getEvents();
+                                    ArrayList<Encounter> events = eventService.getEncounters();
                                     if (events != null) {
                                         setEvents(events);
                                     }
@@ -180,7 +190,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationUpdater.start();
     }
 
-    public void setEvents(ArrayList<Event> events) {
+    public synchronized void setEvents(ArrayList<Encounter> encounters) {
         if (mMap != null) {
             if (eventMarkerList != null) {
                 for (Marker mark : eventMarkerList) {
@@ -188,10 +198,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
             }
+            Marker mark;
             eventMarkerList = new ArrayList<Marker>();
-            /*for (Event event : events) {
-                eventMarkerList.add(mMap.addMarker(new MarkerOptions().position(event.getLocation()).title(event.getEventName() + "\n" + "level: " + event.getLevel()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
-            }*/
+            for (Encounter encounter : encounters) {
+                mark = mMap.addMarker(new MarkerOptions().position(encounter.getLatlng()).title(encounter.getEvent().getNaam() + "\n" + "level: " + encounter.getUnimon().getLevel()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                markerMap.put(mark, encounter);
+                eventMarkerList.add(mark);
+            }
         }
     }
 
@@ -260,4 +273,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             eventbound = false;
         }
     };
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Encounter encounter = markerMap.get(marker);
+        if (encounter != null) {
+
+            Intent intent = new Intent(this, BattleActivity.class);
+
+            GsonBuilder builder = new GsonBuilder();
+            builder.serializeNulls();
+            Gson gson = builder.create();
+
+            intent.putExtra("encounter", gson.toJson(encounter));
+            startActivity(intent);
+        }
+
+        return false;
+    }
 }

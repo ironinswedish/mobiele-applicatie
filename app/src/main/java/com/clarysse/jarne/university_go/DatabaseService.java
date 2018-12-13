@@ -57,7 +57,7 @@ public class DatabaseService extends Service {
     private UnimonDatabase unimonDatabase;
     private Retrofit retrofit;
     String ip1 = "192.168.1.10";
-    String ip2 = "http://10.108.19.9:5000/";
+    String ip2 = "http://10.110.155.208:5000/";
     private ApiCallsInterface apiCallsInterface;
 
 
@@ -107,6 +107,9 @@ public class DatabaseService extends Service {
                     }
                 }
             };
+
+            new pushUnimonModifications().execute();
+            Log.e("sp", "unimonpushed");
             timer.schedule(timertask, new Date(), 5000);
         }
 
@@ -147,11 +150,19 @@ public class DatabaseService extends Service {
         protected Integer doInBackground(String... strings) {
 
             List<Unimon> modifiedUnimon = new ArrayList<>();
-            setIterator = modified.iterator();
+            /*setIterator = modified.iterator();
             while (setIterator.hasNext()) {
                 modifiedItem = setIterator.next();
                 modifiedUnimon.add(unimonDatabase.daoAcces().getUnimonById(Integer.parseInt(modifiedItem)));
-            }
+            }*/
+            Unimon uni = new Unimon();
+            uni.setExp(51);
+            uni.setLevel(40);
+            uni.setNickname("heya");
+            uni.setReal_id("2-1");
+            uni.setOwnerid(2);
+            uni.setEventid(3);
+            modifiedUnimon.add(uni);
             GsonBuilder builder = new GsonBuilder();
             builder.serializeNulls();
             Gson gson = builder.create();
@@ -159,7 +170,18 @@ public class DatabaseService extends Service {
             String ip1 = "192.168.1.10";
             String ip2 = "10.108.19.9";
 
-            apiCallsInterface.updateunimon(gson.toJson(modifiedUnimon).toString());
+           Call<String> unimonCall = apiCallsInterface.updateunimon(gson.toJson(modifiedUnimon));
+            try {
+                Response<String> unimonresponse = unimonCall.execute();
+                if (unimonresponse.isSuccessful()) {
+                    Log.e("unimon", "succes");
+                } else {
+                    Log.e("unimon", "failure");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
             /*try {
                 URL url = new URL("http://10.108.19.9:5000/updateunimon");
@@ -208,11 +230,26 @@ public class DatabaseService extends Service {
         @Override
         protected Integer doInBackground(String... strings) {
             try {
-                URL url = new URL("http://10.108.19.9:5000/getupdatemove/" + lastUpdated);
-                setupConnection(url, "move");
-                url = new URL("http://10.108.19.9:5000/getupdateevent/" + lastUpdated);
-                setupConnection(url, "event");
+                Call<List<Move>> moveCall = apiCallsInterface.getLatestMoves(String.valueOf(lastUpdated));
+                Call<List<Event>> eventCall = apiCallsInterface.getLatestEvents(String.valueOf(lastUpdated));
 
+                Response<List<Move>> responseMove = moveCall.execute();
+                Response<List<Event>> responseEvent = eventCall.execute();
+
+                if (responseMove.isSuccessful()) {
+                    moves = responseMove.body();
+                } else {
+                    Log.e("move", "did not receive all moves");
+                }
+
+                if (responseEvent.isSuccessful()) {
+                    events = responseEvent.body();
+                } else {
+                    Log.e("move", "did not receive all moves");
+                }
+
+                unimonDatabase.daoAcces().updateMoves(moves);
+                unimonDatabase.daoAcces().updateEvents(events);
 
                 return 0;
             } catch (Exception e) {

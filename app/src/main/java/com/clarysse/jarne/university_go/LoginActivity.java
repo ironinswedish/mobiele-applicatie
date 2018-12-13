@@ -1,6 +1,7 @@
 package com.clarysse.jarne.university_go;
 
 import android.content.Intent;
+import android.graphics.PostProcessor;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -21,14 +22,22 @@ import com.google.android.gms.tasks.Task;
 
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -257,7 +266,7 @@ public class LoginActivity extends AppCompatActivity {
 
             JSONObject tokenObje = new JSONObject(param);
             try {
-                URL url = new URL("http://192.168.1.10:5000/google_login");
+                URL url = new URL("http://10.110.155.208:5000/google_login");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
@@ -350,7 +359,7 @@ public class LoginActivity extends AppCompatActivity {
 
             JSONObject credObject = new JSONObject(param);
             try {
-                URL url = new URL("http://10.0.2.2:5000/login");
+                URL url = new URL("http://10.110.155.208:5000/login");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
@@ -395,7 +404,7 @@ public class LoginActivity extends AppCompatActivity {
         JSONObject credObject = new JSONObject(param);
 
         try {
-            URL url = new URL("http://10.0.2.2:5000/getsalt");
+            URL url = new URL("http://10.110.155.208:5000/getsalt");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);

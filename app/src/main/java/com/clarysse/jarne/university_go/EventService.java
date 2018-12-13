@@ -1,11 +1,14 @@
 package com.clarysse.jarne.university_go;
 
 import android.app.Service;
+import android.arch.persistence.room.Room;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -28,8 +31,13 @@ public class EventService extends Service {
     private Location location;
     private boolean bound = false;
     private LocationService locationService;
-    private int RADIUS = 100;
-    private static ArrayList<Event> nearbyEventList;
+    private int RADIUS = 200;
+    private SharedPreferences sp;
+    private static ArrayList<Encounter> nearbyEncounterList;
+    private static final String DATABASE_NAME = "movies_db";
+    private UnimonDatabase unimonDatabase;
+    private String userId;
+
 
     private final IBinder mBinder = new EventService.LocalBinder();
 
@@ -44,35 +52,72 @@ public class EventService extends Service {
     }
 
     public void addRandomEvents(){
-        nearbyEventList = new ArrayList<Event>();
 
-        for(int i = 0; i<10;i++) {
-            double x0 = location.getLatitude();
-            double y0 = location.getLongitude();
-
-            Random random = new Random();
-
-            // Convert radius from meters to degrees
-            double radiusInDegrees = RADIUS / 111000f;
-
-            double u = random.nextDouble();
-            double v = random.nextDouble();
-            double w = radiusInDegrees * Math.sqrt(u);
-            double t = 2 * Math.PI * v;
-            double x = w * Math.cos(t);
-            double y = w * Math.sin(t);
-
-            // Adjust the x-coordinate for the shrinking of the east-west distances
-            double new_x = x / Math.cos(y0);
-
-            double foundLatitude = new_x + x0;
-            double foundLongitude = y + y0;
-            LatLng randomLatLng = new LatLng(foundLatitude, foundLongitude);
-            String name = "funny event "+i;
-            //nearbyEventList.add(new Event());
-        }
     }
 
+
+
+    private class RandomEventTask extends AsyncTask<String, Void, Integer>{
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+            nearbyEncounterList = new ArrayList<Encounter>();
+
+            for(int i = 0; i<10;i++) {
+                double x0 = location.getLatitude();
+                double y0 = location.getLongitude();
+
+                Random random = new Random();
+
+                // Convert radius from meters to degrees
+                double radiusInDegrees = RADIUS / 111000f;
+
+                double u = random.nextDouble();
+                double v = random.nextDouble();
+                double w = radiusInDegrees * Math.sqrt(u);
+                double t = 2 * Math.PI * v;
+                double x = w * Math.cos(t);
+                double y = w * Math.sin(t);
+
+                // Adjust the x-coordinate for the shrinking of the east-west distances
+                double new_x = x / Math.cos(y0);
+
+                double foundLatitude = new_x + x0;
+                double foundLongitude = y + y0;
+                LatLng randomLatLng = new LatLng(foundLatitude, foundLongitude);
+                String name = "funny event "+i;
+
+                Event unimonEvent = getRandomEvent();
+                //deze unimon geeft geen id en wordt pas gepushed wanneer hij gevangen is
+                Unimon randomUnimon = new Unimon();
+                randomUnimon.setEventid(unimonEvent.getEventid());
+                randomUnimon.setOwnerid(Integer.parseInt(userId));
+                randomUnimon.setLevel(random.nextInt(50)+1);
+
+                nearbyEncounterList.add(new Encounter(randomLatLng,unimonEvent,randomUnimon));
+            }
+
+            return 0;
+        }
+
+        private Event getRandomEvent(){
+            Random random = new Random();
+            int eventid = random.nextInt(unimonDatabase.daoAcces().eventRowCount())+1;
+            Log.e("randomevent", String.valueOf(unimonDatabase.daoAcces().eventRowCount()+1));
+            Log.e("randomevent", String.valueOf(eventid));
+            Event event = unimonDatabase.daoAcces().getEventById(eventid);
+            String eventtest;
+            if (event == null) {
+                eventtest = "null";
+            } else{
+                eventtest = event.getNaam();
+            }
+            Log.e("randomEvent", eventtest);
+
+
+            return event;
+        }
+    }
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -95,7 +140,12 @@ public class EventService extends Service {
         isRunning = false;
         timer = new Timer();
         final Intent startservice;
-
+        unimonDatabase = Room.databaseBuilder(getApplicationContext(), UnimonDatabase.class, DATABASE_NAME)
+                .fallbackToDestructiveMigration()
+                .build();
+        sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        userId = sp.getString("userid", null);
+        userId = "1";
         startservice = new Intent(this, LocationService.class);
         if (!bound) {
             startService(startservice);
@@ -104,8 +154,8 @@ public class EventService extends Service {
         }
     }
 
-    public static ArrayList<Event> getEvents(){
-        return nearbyEventList;
+    public static ArrayList<Encounter> getEncounters(){
+        return nearbyEncounterList;
     }
 
 
@@ -126,7 +176,7 @@ public class EventService extends Service {
                     //Log.e("Event", "Timer executing");
                     location = LocationService.getLocation();
                     if (location != null) {
-                        addRandomEvents();
+                        new RandomEventTask().execute();
 
                         Log.e("Event", "Setting events");
                     }
@@ -137,7 +187,7 @@ public class EventService extends Service {
                 location = locationService.getLocation();
 
             }
-            addRandomEvents();
+            new RandomEventTask().execute();
             timer.schedule(timertask, new Date(), 5000);
         }
 

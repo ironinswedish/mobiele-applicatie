@@ -50,5 +50,13 @@ public interface DaoAcces {
     @Query("SELECT * FROM Unimon")
     List<Unimon> getUnimons();
 
+    @Query("SELECT COUNT(*) FROM Event")
+    int eventRowCount();
+
+    @Query("SELECT COUNT(*) FROM Unimon")
+    int unimonRowCount();
+
+    @Query("SELECT COUNT(*) FROM Unimon WHERE eventId = :eventId")
+    int caughtAmount(int eventId);
 
 }

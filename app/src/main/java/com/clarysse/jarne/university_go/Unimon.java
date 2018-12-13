@@ -17,7 +17,7 @@ public class Unimon {
     private String real_id;
 
     public Unimon(){
-
+        exp = 0;
     }
 
     @NonNull

@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView id;
     private TextView naam;
     private TextView description;
+    private Button mainMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +109,14 @@ public class MainActivity extends AppCompatActivity {
         naam = findViewById(R.id.textView3);
         description = findViewById(R.id.textView4);
 
+        final Intent intent5 = new Intent(this, MainMenuActivity.class);
+        mainMenu = findViewById(R.id.button3);
+        mainMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(intent5);
+            }
+        });
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {

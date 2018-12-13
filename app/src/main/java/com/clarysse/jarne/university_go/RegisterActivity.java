@@ -52,7 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private ApiCallsInterface apiCallsInterface;
     private Retrofit retrofit;
-    String ip2 = "http://10.0.2.2:5000/";
+    String ip2 = "http://10.110.155.208:5000/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
