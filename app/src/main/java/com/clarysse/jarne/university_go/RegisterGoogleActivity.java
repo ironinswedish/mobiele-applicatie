@@ -290,8 +290,10 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                             handleRegister(0,results[1]);
                             SharedPreferences sp;
                             sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                            sp.edit().putString("userid", results[2]);
-                            sp.edit().putString("sprite", results[3]);
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putInt("userid", Integer.parseInt(results[2]));
+                            editor.putString("sprite", results[3]);
+                            editor.commit();
                         }
                         else{
                             handleRegister(-1,null);

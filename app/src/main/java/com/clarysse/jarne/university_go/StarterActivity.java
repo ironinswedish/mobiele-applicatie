@@ -1,7 +1,9 @@
 package com.clarysse.jarne.university_go;
 
 import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -20,12 +22,14 @@ public class StarterActivity extends AppCompatActivity implements NickNameDialog
     private Unimon starter;
     private static final String DATABASE_NAME = "movies_db";
     private UnimonDatabase unimonDatabase;
+    private int userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_starter);
-
+        SharedPreferences sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        userId = sp.getInt("userid", -1);
         unimonDatabase = Room.databaseBuilder(getApplicationContext(), UnimonDatabase.class, DATABASE_NAME)
                 .fallbackToDestructiveMigration()
                 .build();
@@ -35,11 +39,11 @@ public class StarterActivity extends AppCompatActivity implements NickNameDialog
         teacherstarter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int ownerid = 1;
+
                 starter = new Unimon();
                 starter.setLevel(5);
                 starter.setExp((int) Math.round(20 * Math.pow(1.5, 5)));
-                starter.setOwnerid(ownerid);
+                starter.setOwnerid(userId);
                 starter.setEventid(5);//5
                 startNicknamedialog();
                 new PutUnimonTask().execute();
@@ -49,12 +53,12 @@ public class StarterActivity extends AppCompatActivity implements NickNameDialog
         studentstarter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int ownerid = 1;
+
                 starter = new Unimon();
                 starter.setLevel(5);
                 starter.setExp((int) Math.round(20 * Math.pow(1.5, 5)));
 
-                starter.setOwnerid(ownerid);
+                starter.setOwnerid(userId);
                 starter.setEventid(3);//3
                 startNicknamedialog();
                 new PutUnimonTask().execute();
@@ -64,11 +68,11 @@ public class StarterActivity extends AppCompatActivity implements NickNameDialog
         utilitystarter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int ownerid = 1;
+
                 starter = new Unimon();
                 starter.setLevel(5);
                 starter.setExp((int) Math.round(20 * Math.pow(1.5, 5)));
-                starter.setOwnerid(ownerid);
+                starter.setOwnerid(userId);
                 starter.setEventid(4);//4
 
                 startNicknamedialog();
@@ -82,8 +86,15 @@ public class StarterActivity extends AppCompatActivity implements NickNameDialog
 
     @Override
     public void applyNickname(String nickname) {
+
         new UpdateUnimonTask().execute(nickname);
         Log.e("dialog entered", "nickname is " + nickname);
+        Intent intent = new Intent(this, MainMenuActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void noNickname(){
         Intent intent = new Intent(this, MainMenuActivity.class);
         startActivity(intent);
     }

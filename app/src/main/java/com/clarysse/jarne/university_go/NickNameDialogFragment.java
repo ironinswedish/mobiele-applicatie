@@ -28,6 +28,8 @@ public class NickNameDialogFragment extends DialogFragment {
                         String nickname = nicknameField.getText().toString();
                         if(!nickname.equals("")) {
                             listener.applyNickname(nickname);
+                        } else {
+                            listener.noNickname();
                         }
                     }
                 });
@@ -50,5 +52,6 @@ public class NickNameDialogFragment extends DialogFragment {
 
     public interface NickNameDialogListener{
         void applyNickname(String nickname);
+        void noNickname();
     }
 }

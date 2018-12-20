@@ -54,7 +54,7 @@ public class DatabaseService extends Service {
     private Iterator<String> setIterator;
     private String modifiedItem;
     private String[] splitItem;
-    private String userId;
+    private int userId;
     private List<Move> moves;
     private List<Event> events;
     private List<Unimon> unimons;
@@ -87,9 +87,9 @@ public class DatabaseService extends Service {
         sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         modified = sp.getStringSet("modified", null);
         lastUpdated = sp.getInt("lastupdated", 0);
-        userId = sp.getString("userid", null);
-        userId = "jap";
-        Log.e("dbservice",userId);
+        userId = sp.getInt("userid", -1);
+
+        Log.e("dbservice",""+userId);
         unimonDatabase = Room.databaseBuilder(getApplicationContext(), UnimonDatabase.class, DATABASE_NAME)
                 .fallbackToDestructiveMigration()
                 .build();
@@ -304,8 +304,8 @@ public class DatabaseService extends Service {
                     Log.e("move", "did not receive all moves");
                 }
 
-                if(userId!=null) {
-                    Call<List<Unimon>> unimonCall = apiCallsInterface.getOwnUnimons(userId);
+                if(userId!=-1) {
+                    Call<List<Unimon>> unimonCall = apiCallsInterface.getOwnUnimons(""+userId);
                     Response<List<Unimon>> responseUnimon = unimonCall.execute();
                     if (responseUnimon.isSuccessful()) {
                         unimons = responseUnimon.body();

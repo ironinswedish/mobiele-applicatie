@@ -289,8 +289,11 @@ public class LoginActivity extends AppCompatActivity {
                         Log.e("loginTask", "response )))))))))))))))))))))))))))))))))))))" + conn.getResponseMessage());
                         String[] string = sb.toString().substring(6, sb.length()).split("-");
                         SharedPreferences sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                        sp.edit().putInt("userid", Integer.parseInt(string[0]));
-                        sp.edit().putString("sprite", string[1]);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putInt("userid", Integer.parseInt(string[0]));
+                        editor.putString("sprite", string[1]);
+                        editor.commit();
+
                         Log.e("hai", "correct");
                         return 3;
 
@@ -410,8 +413,10 @@ public class LoginActivity extends AppCompatActivity {
                     JSONObject object = new JSONObject(sb.toString());
                     Log.e("json",""+ object.getInt("userid"));
                     SharedPreferences sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                    sp.edit().putInt("userid", object.getInt("userid"));
-                    sp.edit().putString("sprite", object.getString("sprite"));
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putInt("userid", object.getInt("userid"));
+                    editor.putString("sprite", object.getString("sprite"));
+                    editor.commit();
                     return 200;
                 } else {
                     Log.e("loginTask", "response2 " + conn.getResponseMessage());
