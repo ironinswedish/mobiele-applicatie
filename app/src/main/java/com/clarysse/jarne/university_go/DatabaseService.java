@@ -14,6 +14,8 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,11 +24,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +39,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -57,13 +62,14 @@ public class DatabaseService extends Service {
     private UnimonDatabase unimonDatabase;
     private Retrofit retrofit;
     String ip1 = "192.168.1.10";
-    String ip2 = "http://10.110.155.208:5000/";
+    String ip2;
     private ApiCallsInterface apiCallsInterface;
 
 
 
 
     public DatabaseService() {
+
     }
 
     @Override
@@ -74,6 +80,7 @@ public class DatabaseService extends Service {
 
     @Override
     public void onCreate() {
+        ip2 =getResources().getString(R.string.IPaddres);
         Log.d("databaseService", "created");
         isRunning = false;
         timer = new Timer();
@@ -168,9 +175,9 @@ public class DatabaseService extends Service {
             Gson gson = builder.create();
             gson.toJson(modifiedUnimon);
             String ip1 = "192.168.1.10";
-            String ip2 = "10.108.19.9";
-
-           Call<String> unimonCall = apiCallsInterface.updateunimon(gson.toJson(modifiedUnimon));
+            String ip2 = "http://192.168.1.10:5000";
+            Type collectionType = new TypeToken<Collection<Unimon>>(){}.getType();
+            Call<String> unimonCall = apiCallsInterface.updateunimon(gson.toJsonTree(modifiedUnimon,collectionType).getAsJsonArray());
             try {
                 Response<String> unimonresponse = unimonCall.execute();
                 if (unimonresponse.isSuccessful()) {
@@ -230,20 +237,26 @@ public class DatabaseService extends Service {
         @Override
         protected Integer doInBackground(String... strings) {
             try {
-                Call<List<Move>> moveCall = apiCallsInterface.getLatestMoves(String.valueOf(lastUpdated));
-                Call<List<Event>> eventCall = apiCallsInterface.getLatestEvents(String.valueOf(lastUpdated));
+                Gson gson = new Gson();
+                Call<JsonElement> moveCall = apiCallsInterface.getLatestMoves(String.valueOf(lastUpdated));
+                Call<JsonElement> eventCall = apiCallsInterface.getLatestEvents(String.valueOf(lastUpdated));
 
-                Response<List<Move>> responseMove = moveCall.execute();
-                Response<List<Event>> responseEvent = eventCall.execute();
+                Response<JsonElement> responseMove = moveCall.execute();
+                Response<JsonElement> responseEvent = eventCall.execute();
+
 
                 if (responseMove.isSuccessful()) {
-                    moves = responseMove.body();
+                    Type collectionType = new TypeToken<List<Move>>(){}.getType();
+
+                    moves = gson.fromJson(responseMove.body().getAsJsonArray(),collectionType);
+                    System.out.println(moves.size()+"ev");
                 } else {
                     Log.e("move", "did not receive all moves");
                 }
-
                 if (responseEvent.isSuccessful()) {
-                    events = responseEvent.body();
+                    Type collectionType = new TypeToken<List<Event>>(){}.getType();
+                    events = gson.fromJson(responseEvent.body().getAsJsonArray(),collectionType);
+                    System.out.println(events.size()+"ev");
                 } else {
                     Log.e("move", "did not receive all moves");
                 }
@@ -266,21 +279,27 @@ public class DatabaseService extends Service {
         protected Integer doInBackground(String... strings) {
             try {
 
-                Call<List<Move>> moveCall = apiCallsInterface.getAllMoves();
-                Call<List<Event>> eventCall = apiCallsInterface.getAllEvents();
+                Call<JsonElement> moveCall = apiCallsInterface.getAllMoves();
+                Call<JsonElement> eventCall = apiCallsInterface.getAllEvents();
 
-                Response<List<Move>> responseMove = moveCall.execute();
-                Response<List<Event>> responseEvent = eventCall.execute();
+                Response<JsonElement> responseMove = moveCall.execute();
+                Response<JsonElement> responseEvent = eventCall.execute();
 
 
                 if (responseMove.isSuccessful()) {
-                    moves = responseMove.body();
+                    Type collectionType = new TypeToken<List<Move>>(){}.getType();
+                    Gson gson = new Gson();
+                    moves = gson.fromJson(responseMove.body().getAsJsonArray(),collectionType);
+                    Log.e("events", "moves" +moves.size());
                 } else {
                     Log.e("move", "did not receive all moves");
                 }
 
                 if (responseEvent.isSuccessful()) {
-                    events = responseEvent.body();
+                    Type collectionType = new TypeToken<List<Event>>(){}.getType();
+                    Gson gson = new Gson();
+                    events = gson.fromJson(responseEvent.body().getAsJsonArray(),collectionType);
+                    Log.e("events", "events" + events.size());
                 } else {
                     Log.e("move", "did not receive all moves");
                 }

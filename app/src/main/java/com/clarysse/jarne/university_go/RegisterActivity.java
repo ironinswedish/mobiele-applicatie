@@ -52,7 +52,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private ApiCallsInterface apiCallsInterface;
     private Retrofit retrofit;
-    String ip2 = "http://10.110.155.208:5000/";
+    String ip2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
         characterSwitch = findViewById(R.id.characterswitch);
 
         raceSwitch = findViewById(R.id.raceSwitch);
-
+        ip2 = getResources().getString(R.string.IPaddres);
         characterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -111,14 +112,14 @@ public class RegisterActivity extends AppCompatActivity {
 
 
 
-        final Intent intent = new Intent(this, MainMenuActivity.class);
+        final Intent intent = new Intent(this, StarterActivity.class);
         registerButton = findViewById(R.id.registerbutton);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int result =register();
-                /*if(result==0){
-                startActivity(intent);
+                if(result==0){
+
                 }
                 else if(result ==-1){
                     CharSequence message = "Email adress already in use.";
@@ -132,7 +133,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
                     toast.show();
-                }*/
+                }
             }
         });
     }
@@ -143,7 +144,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
 
-        Intent intent = new Intent(this, MainMenuActivity.class);
+        Intent intent = new Intent(this, StarterActivity.class);
         if(result==0){
             SharedPreferences sp;
             sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);

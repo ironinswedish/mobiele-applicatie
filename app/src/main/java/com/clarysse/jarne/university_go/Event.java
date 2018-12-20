@@ -1,17 +1,17 @@
 package com.clarysse.jarne.university_go;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 
-@Entity
+@Entity(indices = {@Index(value = {"naam"}, unique = true)})
 public class Event {
 
     @NonNull
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     private int eventid;
-
     private String naam;
     private String type;
     private String tags;
@@ -107,7 +107,7 @@ public class Event {
         this.base_health = base_health;
     }
 
-    public Event(){
+    public Event() {
 
     }
 }

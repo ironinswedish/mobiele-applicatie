@@ -2,6 +2,7 @@ package com.clarysse.jarne.university_go;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 @Entity

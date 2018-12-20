@@ -59,12 +59,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private ApiCallsInterface apiCallsInterface;
     private Retrofit retrofit;
-    String ip2 = "http://10.0.2.2:5000/";
+    String ip2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ip2 = getResources().getString(R.string.IPaddres);
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -267,7 +268,7 @@ public class LoginActivity extends AppCompatActivity {
 
             JSONObject tokenObje = new JSONObject(param);
             try {
-                URL url = new URL("http://10.110.155.208:5000/google_login");
+                URL url = new URL(ip2+"google_login");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
@@ -369,7 +370,7 @@ public class LoginActivity extends AppCompatActivity {
 
             JSONObject credObject = new JSONObject(param);
             try {
-                URL url = new URL("http://10.110.155.208:5000/login");
+                URL url = new URL(ip2+"login");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
@@ -414,7 +415,7 @@ public class LoginActivity extends AppCompatActivity {
         JSONObject credObject = new JSONObject(param);
 
         try {
-            URL url = new URL("http://10.110.155.208:5000/getsalt");
+            URL url = new URL(ip2+"getsalt");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);

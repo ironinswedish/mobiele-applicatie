@@ -1,14 +1,15 @@
 package com.clarysse.jarne.university_go;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-@Entity
+@Entity(indices = {@Index(value = {"naam"}, unique = true)})
 public class Move {
 
     @NonNull
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     private int moveid;
     private String naam;
     private String beschrijving;

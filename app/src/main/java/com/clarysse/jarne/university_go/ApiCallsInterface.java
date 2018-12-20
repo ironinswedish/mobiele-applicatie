@@ -1,6 +1,12 @@
 package com.clarysse.jarne.university_go;
 
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
+
 import org.json.JSONObject;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,22 +19,22 @@ import retrofit2.http.Path;
 
 public interface ApiCallsInterface {
     @GET("move")
-    Call<List<Move>> getAllMoves();
+    Call<JsonElement> getAllMoves();
 
     @GET("event")
-    Call<List<Event>> getAllEvents();
+    Call<JsonElement> getAllEvents();
 
     @GET("ownunimon/{userid}")
     Call<List<Unimon>> getOwnUnimons(@Path("userid") String userid);
 
     @POST("updateunimon")
-    Call<String> updateunimon(@Body String unimons);
+    Call<String> updateunimon(@Body JsonArray unimons);
 
     @GET("getupdatemove/{latestupdate}")
-    Call<List<Move>> getLatestMoves(@Path("latestupdate") String latestupdate);
+    Call<JsonElement> getLatestMoves(@Path("latestupdate") String latestupdate);
 
     @GET("getupdateevent/{latestupdate}")
-    Call<List<Event>> getLatestEvents(@Path("latestupdate") String latestupdate);
+    Call<JsonElement> getLatestEvents(@Path("latestupdate") String latestupdate);
 
 
 

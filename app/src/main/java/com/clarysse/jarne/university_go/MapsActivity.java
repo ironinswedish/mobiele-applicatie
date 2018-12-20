@@ -78,8 +78,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -174,12 +172,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         setEvents(events);
                                     }
 
+
                                 }
 
 
                             }
                         });
-                        Thread.sleep(5000);
+                        Thread.sleep(10000);
                     }
                 } catch (InterruptedException e) {
 
@@ -191,6 +190,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public synchronized void setEvents(ArrayList<Encounter> encounters) {
+
         if (mMap != null) {
             if (eventMarkerList != null) {
                 for (Marker mark : eventMarkerList) {
@@ -200,11 +200,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             Marker mark;
             eventMarkerList = new ArrayList<Marker>();
-            for (Encounter encounter : encounters) {
-                mark = mMap.addMarker(new MarkerOptions().position(encounter.getLatlng()).title(encounter.getEvent().getNaam() + "\n" + "level: " + encounter.getUnimon().getLevel()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                markerMap.put(mark, encounter);
-                eventMarkerList.add(mark);
-            }
+
+
+
+                for (Encounter encounter : encounters) {
+                    mark = mMap.addMarker(new MarkerOptions().position(encounter.getLatlng()).title(encounter.getEvent().getNaam() + "\n" + "level: " + encounter.getUnimon().getLevel()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                    markerMap.put(mark, encounter);
+                    eventMarkerList.add(mark);
+                }
+
         }
     }
 

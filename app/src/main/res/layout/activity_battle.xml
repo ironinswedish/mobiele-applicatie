@@ -7,7 +7,7 @@
     tools:context=".BattleActivity">
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/foeImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="28dp"
@@ -20,7 +20,7 @@
         app:srcCompat="@drawable/unimon_1" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/userImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="211dp"
@@ -40,27 +40,28 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/userImage" />
 
     <Button
         android:id="@+id/catchbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="164dp"
         android:layout_marginEnd="30dp"
         android:layout_marginStart="30dp"
         android:text="Catch"
-        app:layout_constraintBottom_toTopOf="@+id/move1"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/switchbutton"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/switchbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="164dp"
         android:text="Switch"
-        app:layout_constraintBottom_toTopOf="@+id/move1"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -68,64 +69,100 @@
         android:id="@+id/leavebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="164dp"
         android:layout_marginEnd="30dp"
         android:layout_marginStart="30dp"
         android:text="Leave"
-        app:layout_constraintBottom_toTopOf="@+id/move2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/switchbutton" />
 
     <Button
         android:id="@+id/move1"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="80dp"
         android:text="Move1"
         app:layout_constraintBottom_toTopOf="@+id/move3"
+        app:layout_constraintEnd_toStartOf="@+id/move2"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/move2"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-        android:layout_marginEnd="69dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="66dp"
+        android:layout_marginStart="8dp"
         android:text="Move2"
         app:layout_constraintBottom_toTopOf="@+id/move4"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/move1" />
 
     <Button
         android:id="@+id/move3"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="80dp"
         android:text="Move3"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/move4"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/move4"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="66dp"
+        android:layout_marginStart="8dp"
         android:text="Move4"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/move3" />
 
     <TableLayout
         android:id="@+id/userstatusbar"
         android:layout_width="191dp"
-        android:layout_height="56dp"
+        android:layout_height="75dp"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2">
+        app:layout_constraintStart_toEndOf="@+id/userImage"
+        app:layout_constraintTop_toBottomOf="@+id/foeImage">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/progressbaruser"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progressTint="@android:color/holo_green_dark" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/hpvalue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hp: 24/24" />
+
+        </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
@@ -142,22 +179,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ProgressBar
-                android:id="@+id/progressbaruser"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="180dp"
-                android:layout_height="wrap_content" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
             <TextView
-                android:id="@+id/hpvalue"
+                android:id="@+id/userlevel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hp: 24/24" />
+                android:text="lv:" />
         </TableRow>
 
     </TableLayout>
@@ -170,6 +196,17 @@
         android:layout_marginTop="25dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/foelevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="lv:" />
+        </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
@@ -190,7 +227,9 @@
                 android:id="@+id/progressbarfoe"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="180dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progressTint="@android:color/holo_green_dark" />
         </TableRow>
 
     </TableLayout>

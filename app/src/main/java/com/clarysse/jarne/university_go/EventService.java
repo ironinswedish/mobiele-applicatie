@@ -60,7 +60,7 @@ public class EventService extends Service {
     private class RandomEventTask extends AsyncTask<String, Void, Integer>{
 
         @Override
-        protected Integer doInBackground(String... strings) {
+        protected synchronized Integer doInBackground(String... strings) {
             nearbyEncounterList = new ArrayList<Encounter>();
 
             for(int i = 0; i<10;i++) {
@@ -93,6 +93,8 @@ public class EventService extends Service {
                 randomUnimon.setEventid(unimonEvent.getEventid());
                 randomUnimon.setOwnerid(Integer.parseInt(userId));
                 randomUnimon.setLevel(random.nextInt(50)+1);
+                randomUnimon.setNickname(unimonEvent.getNaam());
+                randomUnimon.setExp((int) Math.round(20 * Math.pow(1.5, randomUnimon.getLevel())));
 
                 nearbyEncounterList.add(new Encounter(randomLatLng,unimonEvent,randomUnimon));
             }
@@ -188,7 +190,7 @@ public class EventService extends Service {
 
             }
             new RandomEventTask().execute();
-            timer.schedule(timertask, new Date(), 5000);
+            timer.schedule(timertask, new Date(), 10000);
         }
 
 

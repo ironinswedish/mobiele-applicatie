@@ -84,12 +84,14 @@ public class TeamActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             convertView = getLayoutInflater().inflate(R.layout.teamentry, null);
-            Unimon unimon = unimonList.get(position+1);
+            Unimon unimon = unimonList.get(position);
             ImageView imageView = convertView.findViewById(R.id.teamsprite);
-            Event event = eventList.get(unimon.getEventid());
+            Event event = eventList.get(unimon.getEventid()-1);
 
             TextView nickname = convertView.findViewById(R.id.entrynumber);
+            Log.e("teamlist", ""+unimon.getNickname());
             nickname.setText(unimon.getNickname());
+
             TextView level = convertView.findViewById(R.id.realname);
             level.setText(""+unimon.getLevel());
             TextView totalhpvalue = convertView.findViewById(R.id.catchamount);
@@ -157,11 +159,11 @@ public class TeamActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(String... strings) {
-            unimonList = unimonDatabase.daoAcces().getUnimons();
+            unimonList = unimonDatabase.daoAcces().getOwnUnimons(1);
             eventList = unimonDatabase.daoAcces().getEvents();
             caughtList = new ArrayList<>();
             for(int i=1;i<eventList.size()+1; i++) {
-                caughtList.add(unimonDatabase.daoAcces().caughtAmount(i));
+                caughtList.add(unimonDatabase.daoAcces().caughtAmount(i,1));
             }
 
             return 0;

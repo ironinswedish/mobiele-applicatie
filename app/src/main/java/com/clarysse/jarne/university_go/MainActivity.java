@@ -4,8 +4,10 @@ import android.arch.persistence.room.Room;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
@@ -34,23 +36,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean bound = false;
     private TextView startcountview;
     private static final String DATABASE_NAME = "movies_db";
-    private UnimonDatabase unimonDatabase;
-    private Button pushData;
-    private Button getData;
-    private TextView id;
-    private TextView naam;
-    private TextView description;
+
+
     private Button mainMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        unimonDatabase = Room.databaseBuilder(getApplicationContext(), UnimonDatabase.class, DATABASE_NAME)
-                .fallbackToDestructiveMigration()
-                .build();
-
 
         final Intent intent = new Intent(this, MapsActivity.class);
         final Intent startdbservice;
@@ -82,32 +75,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        final Intent starterIntent = new Intent(this,LoginActivity.class);
         gotologinButton = findViewById(R.id.gotologinbutton);
         gotologinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(loginIntent);
+                startActivity(starterIntent);
 
             }
         });
-        pushData = findViewById(R.id.button);
-        pushData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new PushToRoom().execute();
-            }
-        });
-        getData = findViewById(R.id.button2);
-        getData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new GetFromRoom().execute();
-            }
-        });
-
-        id = findViewById(R.id.textView2);
-        naam = findViewById(R.id.textView3);
-        description = findViewById(R.id.textView4);
 
         final Intent intent5 = new Intent(this, MainMenuActivity.class);
         mainMenu = findViewById(R.id.button3);
@@ -117,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent5);
             }
         });
+        WifiBroadCastReceiver broadCastReceiver = new WifiBroadCastReceiver();
+        this.registerReceiver(broadCastReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -141,50 +120,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Intent startservice;
+        Intent startdbservice;
         startservice = new Intent(this, LocationService.class);
         if (bound) {
             unbindService(mConnection);
             bound = false;
         }
+        startdbservice = new Intent(this, LocationService.class);
         stopService(startservice);
+        stopService(startdbservice);
         super.onDestroy();
     }
 
-    public class PushToRoom extends AsyncTask<String, Void, Integer> {
-
-        @Override
-        protected Integer doInBackground(String... strings) {
-
-            Event event = new Event();
-            event.setBase_health(15);
-            event.setBeschrijving("blablabla");
-            event.setEventid(13);
-            event.setNaam("sleepy ruben");
-            List<Event> eventList = new ArrayList<>();
-            eventList.add(event);
-            unimonDatabase.daoAcces().insertMultipleEvent(eventList);
-
-            return 0;
-        }
-    }
-
-    public class GetFromRoom extends AsyncTask<String, Void, Integer> {
-
-        @Override
-        protected Integer doInBackground(String... strings) {
-
-            List<Event> eventList = unimonDatabase.daoAcces().getEvents();
-            if (eventList != null) {
-                Log.e("getfromroom", (Integer.toString(eventList.get(eventList.size() - 1).getEventid())));
-                Log.e("getfromroom", (eventList.get(eventList.size() - 1).getNaam()));
-                Log.e("getfromroom", (eventList.get(eventList.size() - 1).getBeschrijving()));
-            }
-            /*id.setText(eventList.get(0).getEventid());
-            naam.setText(eventList.get(0).getNaam());
-            description.setText(eventList.get(0).getBeschrijving());*/
-
-            return 0;
-        }
-    }
 
 }
