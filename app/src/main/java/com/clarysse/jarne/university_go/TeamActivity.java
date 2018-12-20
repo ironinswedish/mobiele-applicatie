@@ -94,7 +94,7 @@ public class TeamActivity extends AppCompatActivity {
 
             Event event = eventList.get(unimon.getEventid()-1);
             imageView.setImageResource(sp.getInt(""+event.getSprite(),0));
-
+            Log.e("sprite", ""+event.getSprite());
             TextView nickname = convertView.findViewById(R.id.entrynumber);
             Log.e("teamlist", ""+unimon.getNickname());
             nickname.setText(unimon.getNickname());
@@ -107,14 +107,6 @@ public class TeamActivity extends AppCompatActivity {
             type.setText("Type: "+event.getType());
             TextView experience = convertView.findViewById(R.id.experience);
             experience.setText("Exp: "+unimon.getExp());
-            final Intent intent = new Intent(convertView.getContext(), TeamPageActivity.class);
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("list", "image clicked");
-                    startActivity(intent);
-                }
-            });
             return convertView;
         }
 
@@ -141,6 +133,7 @@ public class TeamActivity extends AppCompatActivity {
             Event event = eventList.get(position);
             convertView = getLayoutInflater().inflate(R.layout.unidexentry, null);
             ImageView imageView = convertView.findViewById(R.id.teamsprite);
+            Log.e("sprite", ""+event.getSprite());
             imageView.setImageResource(sp.getInt(""+event.getSprite(),0));
             TextView entrynumber = convertView.findViewById(R.id.entrynumber);
             entrynumber.setText("No: "+event.getEventid());
@@ -151,14 +144,7 @@ public class TeamActivity extends AppCompatActivity {
             TextView type = convertView.findViewById(R.id.type);
             type.setText("Type: "+event.getType());
 
-            final Intent intent = new Intent(convertView.getContext(), UniDexPageActivity.class);
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("list", "image clicked");
-                    startActivity(intent);
-                }
-            });
+
             return convertView;
         }
     }

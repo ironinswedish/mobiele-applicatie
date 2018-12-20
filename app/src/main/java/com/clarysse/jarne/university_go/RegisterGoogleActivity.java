@@ -284,7 +284,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         String result;
                         result=response.body();
-                        String[] results = result.split("-");
+                        String[] results = result.split("#");
                         if(results[0].equals("Tis ok")){
                             System.out.println("Status is op nul gezet"+results[1]);
                             handleRegister(0,results[1]);

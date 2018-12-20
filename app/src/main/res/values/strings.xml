@@ -16,6 +16,6 @@
         completions."
     </string>
     <string name="server_client_id">683143817912-brl4hc87p5c56rfmq81qibv99svv1ou7.apps.googleusercontent.com</string>
-    <string name="IPaddres">http://10.0.2.2:5000/</string>
+    <string name="IPaddres">http://192.168.1.10:5000/</string>
     <string name="title_activity_splash">Splash</string>
 </resources>

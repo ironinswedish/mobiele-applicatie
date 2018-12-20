@@ -27,11 +27,15 @@ public class MainMenuActivity extends AppCompatActivity {
     private Button logoutButton;
     private GoogleSignInClient mGoogleSignInClient;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
+        Intent startdbservice = new Intent(this, DatabaseService.class);
+        startService(startdbservice);
         final Intent intent = new Intent(this, BattleActivity.class);
         battleButton = findViewById(R.id.battlebutton);
         battleButton.setOnClickListener(new View.OnClickListener() {
@@ -48,7 +52,7 @@ public class MainMenuActivity extends AppCompatActivity {
                 startActivity(intent2);
             }
         });
-        final Intent intent3 = new Intent(this, SettingActivity.class);
+
         final Intent intent4 = new Intent(this, MapsActivity.class);
         mapButton = findViewById(R.id.mapbutton);
         mapButton.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +75,7 @@ public class MainMenuActivity extends AppCompatActivity {
                         signOut();
                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(intent);
+                        finish();
 
                 }
             }
@@ -80,8 +85,8 @@ public class MainMenuActivity extends AppCompatActivity {
         sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String sprite = sp.getString("sprite", "");
         SharedPreferences.Editor editor = sp.edit();
-        editor.putInt("1", R.drawable.unimon_2);
-        editor.putInt("2", R.drawable.unimon_1);
+        editor.putInt("1", R.drawable.unimon_1);
+        editor.putInt("2", R.drawable.unimon_2);
         editor.putInt("3", R.drawable.unimon_3);
         editor.putInt("4", R.drawable.unimon_4);
         editor.putInt("5", R.drawable.unimon_5);
@@ -106,5 +111,18 @@ public class MainMenuActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e("mainMenu", "Menu destroyed");
+        Intent startdbservice = new Intent(this, DatabaseService.class);
+        stopService(startdbservice);
+    }
+
+    @Override
+    public void onBackPressed() {
+        //doe niets
     }
 }
