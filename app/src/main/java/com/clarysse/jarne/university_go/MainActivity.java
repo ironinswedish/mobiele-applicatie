@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.support.v7.app.AppCompatActivity;
@@ -36,15 +37,27 @@ public class MainActivity extends AppCompatActivity {
     private boolean bound = false;
     private TextView startcountview;
     private static final String DATABASE_NAME = "movies_db";
+    private int SPLASHTIME=4000;
 
 
     private Button mainMenu;
 
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final Intent starterIntent = new Intent(this,LoginActivity.class);
+        startActivity(starterIntent);
+
+
+
+/*
         final Intent intent = new Intent(this, MapsActivity.class);
         final Intent startdbservice;
         final Intent startservice;
@@ -96,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         WifiBroadCastReceiver broadCastReceiver = new WifiBroadCastReceiver();
         this.registerReceiver(broadCastReceiver,
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    */
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
