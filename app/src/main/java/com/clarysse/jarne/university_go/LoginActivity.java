@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                 handleSignInResult(task);
             }
         });
-        signinlabel = findViewById(R.id.loginlabel);
+        /*signinlabel = findViewById(R.id.loginlabel);
         logoutButton = findViewById(R.id.logoutbutton);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                     // ...
                 }
             }
-        });
+        });*/
         loginButton = findViewById(R.id.loginbutton);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,9 +170,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUI(GoogleSignInAccount account) {
         if (account != null) {
-            signinlabel.setText(account.getDisplayName());
+            //signinlabel.setText(account.getDisplayName());
         } else {
-            signinlabel.setText("no user logged in");
+            //signinlabel.setText("no user logged in");
         }
 
     }
