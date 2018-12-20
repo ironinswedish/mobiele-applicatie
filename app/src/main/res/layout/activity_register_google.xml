@@ -10,13 +10,14 @@
         android:id="@+id/register_username_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
         android:ems="10"
         android:hint="Username"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="83dp" />
+        app:layout_constraintTop_toBottomOf="@+id/register_label" />
 
     <TextView
         android:id="@+id/register_label"
@@ -28,19 +29,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <EditText
-        android:id="@+id/register_password_field"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="156dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <Switch
         android:id="@+id/characterswitch"
@@ -57,11 +45,11 @@
         android:id="@+id/character"
         android:layout_width="163dp"
         android:layout_height="125dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="44dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_password_field"
+        app:layout_constraintTop_toBottomOf="@+id/register_username_field"
         app:srcCompat="@drawable/male2" />
 
     <Button

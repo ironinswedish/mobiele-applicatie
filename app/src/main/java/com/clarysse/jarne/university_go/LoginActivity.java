@@ -1,7 +1,8 @@
 package com.clarysse.jarne.university_go;
 
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.PostProcessor;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -19,31 +20,22 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -56,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button logoutButton;
     private Button loginButton;
     private Button registerButton;
+    private String email;
 
     private ApiCallsInterface apiCallsInterface;
     private Retrofit retrofit;
@@ -135,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        if(result==201){
+        if(result==200){
             Intent intent = new Intent(this, MainMenuActivity.class);
             startActivity(intent);
         }
@@ -202,6 +195,7 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             System.out.println("\na\na\na\na\na\na\na\na\na\na\na\na\na\na");
             String idToken = account.getIdToken();
+            email = account.getEmail();
             Log.e("token", idToken);
             new TaskGoogleLogin().execute(idToken);
 
@@ -290,11 +284,22 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     br.close();
                     Log.e("loginTask", "response " + sb.toString());
-                    if(sb.toString().equals("200 OK")){
+
+                    if(sb.toString().substring(0,6).equals("200 OK")){
                         Log.e("loginTask", "response )))))))))))))))))))))))))))))))))))))" + conn.getResponseMessage());
+                        String[] string = sb.toString().substring(6, sb.length()).split("-");
+                        SharedPreferences sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                        sp.edit().putInt("userid", Integer.parseInt(string[0]));
+                        sp.edit().putString("sprite", string[1]);
+                        Log.e("hai", "correct");
+                        return 3;
+
                     }
                     else if(sb.toString().equals("404 NO USER")){
                         Log.e("loginTask", "response ))))))))))))))))))))))))))))))))))))))))" + conn.getResponseMessage());
+
+
+                        return 2;
                     }
                     else{
                         Log.e("loginTask", "response ))))))))))))))))))))))))))))))))))))))))))" + conn.getResponseMessage());
@@ -302,6 +307,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     Log.e("loginTask", "response )))))))))))))))))))))))))))))))))))))))))))))))" + conn.getResponseMessage());
                     System.out.println(conn.getResponseCode());
+
                 }
                 return 0;
             } catch (Exception e) {
@@ -316,8 +322,15 @@ public class LoginActivity extends AppCompatActivity {
             super.onPostExecute(result);
             if (result == 0) {
                 Log.e("loginTask", "succes");
-            } else {
+            } else if(result == 1) {
                 Log.e("loginTask", "failure");
+            } else if (result == 2) {
+                Intent intent = new Intent(getApplicationContext(), RegisterGoogleActivity.class);
+                intent.putExtra("email",email);
+                startActivity(intent);
+            } else if (result == 3) {
+                Intent intent = new Intent(getApplicationContext(), MainMenuActivity.class);
+                startActivity(intent);
             }
         }
     }
@@ -349,6 +362,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public class LoginTask extends AsyncTask<String, Void, Integer> {
+
         @Override
         protected Integer doInBackground(String... strings) {
 
@@ -392,11 +406,18 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     br.close();
                     Log.e("loginTask", "response1 " + sb.toString());
+                    Gson gson = new Gson();
+                    JSONObject object = new JSONObject(sb.toString());
+                    Log.e("json",""+ object.getInt("userid"));
+                    SharedPreferences sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                    sp.edit().putInt("userid", object.getInt("userid"));
+                    sp.edit().putString("sprite", object.getString("sprite"));
+                    return 200;
                 } else {
                     Log.e("loginTask", "response2 " + conn.getResponseMessage());
                     return conn.getResponseCode();
                 }
-                return 0;
+
             } catch (Exception e) {
                 Log.e("loginTask", "something went wrong", e);
                 return 410;

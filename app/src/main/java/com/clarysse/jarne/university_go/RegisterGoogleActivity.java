@@ -15,40 +15,31 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterGoogleActivity extends AppCompatActivity {
+
 
     private Switch characterSwitch;
     private Switch raceSwitch;
     private ImageView characterImage;
     private Button registerButton;
+    private String email;
 
     private ApiCallsInterface apiCallsInterface;
     private Retrofit retrofit;
@@ -58,10 +49,11 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_register_google);
         characterImage = findViewById(R.id.character);
         characterSwitch = findViewById(R.id.characterswitch);
-
+        Intent intent2 = getIntent();
+        email = intent2.getStringExtra("email");
         raceSwitch = findViewById(R.id.raceSwitch);
         ip2 = getResources().getString(R.string.IPaddres);
         characterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -230,6 +222,7 @@ public class RegisterActivity extends AppCompatActivity {
             TextView register_username_field = findViewById(R.id.register_username_field);
             String username = "" + register_username_field.getText();
 
+            /*
             TextView passwordfield = findViewById((R.id.register_password_field));
             String password = "" + passwordfield.getText();
             byte[] salt = new byte[0];
@@ -248,9 +241,9 @@ public class RegisterActivity extends AppCompatActivity {
             String hashedPassword2 = getSecurePassword(password, salt);
 
             System.out.println("VERGELIJKING: "+hashedPassword+" EN "+hashedPassword2+ " EN "+hashedPassword3);
+*/
+            /*TextView emailfield = findViewById(R.id.register_email_field);*/
 
-            TextView emailfield = findViewById(R.id.register_email_field);
-            String email = "" + emailfield.getText();
 
             //Decide the sprite (kijk da rijmt)
             String sprite = "male1";
@@ -272,10 +265,10 @@ public class RegisterActivity extends AppCompatActivity {
             Map<String, String> param = new HashMap<>();
             param.put("username", username);
             param.put("email", email);
-            param.put("password", hashedPassword);
+            param.put("password", "#");
             param.put("sprite_type", sprite);
             param.put("cubecount", "10");
-            param.put("salt", "" + saltString);
+            param.put("salt", "#");
 
             JSONObject credObject = new JSONObject(param);
 

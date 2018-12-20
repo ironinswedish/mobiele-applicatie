@@ -147,7 +147,7 @@ public class EventService extends Service {
                 .build();
         sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         userId = sp.getString("userid", null);
-        userId = "1";
+
         startservice = new Intent(this, LocationService.class);
         if (!bound) {
             startService(startservice);
