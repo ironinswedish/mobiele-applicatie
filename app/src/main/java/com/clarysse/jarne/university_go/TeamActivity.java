@@ -141,7 +141,7 @@ public class TeamActivity extends AppCompatActivity {
             Event event = eventList.get(position);
             convertView = getLayoutInflater().inflate(R.layout.unidexentry, null);
             ImageView imageView = convertView.findViewById(R.id.teamsprite);
-            imageView.setImageResource(sp.getInt(""+event.getEventid(),0));
+            imageView.setImageResource(sp.getInt(""+event.getSprite(),0));
             TextView entrynumber = convertView.findViewById(R.id.entrynumber);
             entrynumber.setText("No: "+event.getEventid());
             TextView naam = convertView.findViewById(R.id.realname);
