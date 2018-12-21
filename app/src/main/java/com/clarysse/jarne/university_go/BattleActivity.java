@@ -214,7 +214,7 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
         protected Integer doInBackground(String... strings) {
             Random random = new Random();
             int id = random.nextInt(unimonDatabase.daoAcces().unimonRowCount(sp.getInt("userid",0))) + 1;
-            String real_id = 1 + "-" + id;
+            String real_id = sp.getInt("userid",0) + "-" + id;
             usermon = unimonDatabase.daoAcces().getUnimonByRealId(real_id);
             usermonEvent = unimonDatabase.daoAcces().getEventById(usermon.getEventid());
             moves = unimonDatabase.daoAcces().getMoves();

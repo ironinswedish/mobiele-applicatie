@@ -260,6 +260,7 @@ public class DatabaseService extends Service {
                     Log.e("move", "did not receive all moves");
                 }
 
+
                 if(userId!=-1) {
                     Call<List<Unimon>> unimonCall = apiCallsInterface.getOwnUnimons(""+userId);
                     Response<List<Unimon>> responseUnimon = unimonCall.execute();

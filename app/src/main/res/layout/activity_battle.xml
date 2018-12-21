@@ -18,23 +18,6 @@
         app:srcCompat="@drawable/unimonplace" />
 
     <ImageView
-        android:id="@+id/statusfoe"
-        android:layout_width="219dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/statsfoe" />
-
-    <ImageView
-        android:id="@+id/statususer"
-        android:layout_width="209dp"
-        android:layout_height="79dp"
-        android:layout_marginBottom="308dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/statsuni" />
-
-    <ImageView
         android:id="@+id/foeImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -192,6 +175,7 @@
         android:layout_marginEnd="4dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/statsuni"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/userImage"
         app:layout_constraintTop_toBottomOf="@+id/foeImage">
@@ -251,6 +235,7 @@
         android:layout_height="56dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="25dp"
+        android:background="@drawable/statsfoe"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
