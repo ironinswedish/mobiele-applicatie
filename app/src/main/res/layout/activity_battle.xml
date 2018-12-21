@@ -26,15 +26,6 @@
         app:srcCompat="@drawable/statsfoe" />
 
     <ImageView
-        android:id="@+id/statususer"
-        android:layout_width="209dp"
-        android:layout_height="79dp"
-        android:layout_marginBottom="308dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/statsuni" />
-
-    <ImageView
         android:id="@+id/foeImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -185,6 +176,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/move3" />
 
+    <ImageView
+        android:id="@+id/statususer"
+        android:layout_width="209dp"
+        android:layout_height="79dp"
+        android:layout_marginBottom="281dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/statsuni" />
+
     <TableLayout
         android:id="@+id/userstatusbar"
         android:layout_width="191dp"
@@ -241,6 +241,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="lv:" />
+
         </TableRow>
 
     </TableLayout>
