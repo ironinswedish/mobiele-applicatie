@@ -122,6 +122,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+        SharedPreferences sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("1", R.drawable.unimon_1);
+        editor.putInt("2", R.drawable.unimon_2);
+        editor.putInt("3", R.drawable.unimon_3);
+        editor.putInt("4", R.drawable.unimon_4);
+        editor.putInt("5", R.drawable.unimon_5);
+        editor.commit();
+
     }
 
     private void login(){

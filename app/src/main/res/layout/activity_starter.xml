@@ -48,16 +48,6 @@
         app:srcCompat="@drawable/unimon_1" />
 
     <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="48dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/teacherstarter"
-        app:srcCompat="@drawable/unimon_1" />
-
-    <ImageView
         android:id="@+id/imageView9"
         android:layout_width="281dp"
         android:layout_height="252dp"
