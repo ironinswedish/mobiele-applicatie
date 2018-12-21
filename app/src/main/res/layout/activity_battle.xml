@@ -61,9 +61,9 @@
     <ImageView
         android:id="@+id/testkader"
         android:layout_width="387dp"
-        android:layout_height="225dp"
-        android:layout_marginTop="336dp"
+        android:layout_height="240dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginTop="336dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -167,15 +167,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/move3" />
-
-    <ImageView
-        android:id="@+id/statususer"
-        android:layout_width="209dp"
-        android:layout_height="79dp"
-        android:layout_marginBottom="281dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/statsuni" />
 
     <TableLayout
         android:id="@+id/userstatusbar"
