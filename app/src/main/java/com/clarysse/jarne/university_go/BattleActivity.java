@@ -249,6 +249,7 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
     }
 
     private void setmoves() {
+        userMoves = new ArrayList<>();
         String[] movesString = usermonEvent.getMoveset().split("-");
         //instellen moves voor usermon
         Move move = moves.get(Integer.parseInt(movesString[0]) - 1);
