@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,7 +41,7 @@ public class StarterActivity extends AppCompatActivity implements NickNameDialog
                 .build();
 
         teacher = findViewById(R.id.imageView5);
-        student = findViewById(R.id.imageView6);
+        student = findViewById(R.id.imageView8);
         utility = findViewById(R.id.imageView7);
         teacher.setImageResource(sp.getInt("3", 0));
         student.setImageResource(sp.getInt("4", 0));
