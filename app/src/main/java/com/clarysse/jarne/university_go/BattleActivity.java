@@ -2,7 +2,9 @@ package com.clarysse.jarne.university_go;
 
 import android.annotation.SuppressLint;
 import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +21,10 @@ import com.google.gson.Gson;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Handler;
 
 public class BattleActivity extends AppCompatActivity implements SwitchUnimonDialogFragment.SwitchDialogListener, NickNameDialogFragment.NickNameDialogListener {
@@ -57,7 +61,10 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
     private List<Unimon> unimonList;
     private List<Event> eventList;
     private Button runbutton;
-    private Unimon defeatedUsermon;
+    private Unimon defeatedUsermon = new Unimon();
+    private SharedPreferences sp;
+    private Set<String> modifiedSet;
+
 
 
 
@@ -66,7 +73,8 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_battle);
-
+        modifiedSet = new HashSet<>();
+        sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         Intent intent = getIntent();
         String encounterstring = intent.getStringExtra("encounter");
         Encounter encounter = new Gson().fromJson(encounterstring, Encounter.class);
@@ -87,6 +95,7 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
         foelevel = findViewById(R.id.foelevel);
         foelevel.setText("lv:" + foemon.getLevel());
         foeImage = findViewById(R.id.foeImage);
+        foeImage.setImageResource(sp.getInt(foemonEvent.getSprite()+"",0));
         userImage = findViewById(R.id.userImage);
         runbutton = findViewById(R.id.leavebutton);
         runbutton.setOnClickListener(new View.OnClickListener() {
@@ -172,6 +181,7 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
         nicknameuser.setText(unimon.getNickname());
         hpvalue.setText(maximumhpuser + "/" + maximumhpuser);
         userlevel.setText("lv:" + unimon.getLevel());
+        userImage.setImageResource(sp.getInt(""+event.getSprite(),0));
         setmoves();
         setClicklistener(1);
         setClicklistener(2);
@@ -193,12 +203,17 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
         finish();
     }
 
+    @Override
+    public void noNickname(){
+
+    }
+
     private class getUnimon extends AsyncTask<String, Void, Integer> {
 
         @Override
         protected Integer doInBackground(String... strings) {
             Random random = new Random();
-            int id = random.nextInt(unimonDatabase.daoAcces().unimonRowCount(1)) + 1;
+            int id = random.nextInt(unimonDatabase.daoAcces().unimonRowCount(sp.getInt("userid",0))) + 1;
             String real_id = 1 + "-" + id;
             usermon = unimonDatabase.daoAcces().getUnimonByRealId(real_id);
             usermonEvent = unimonDatabase.daoAcces().getEventById(usermon.getEventid());
@@ -362,6 +377,9 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
             public void run() {
                 try {
                     Thread.sleep(6000); // As I am using LENGTH_LONG in Toast
+                    SharedPreferences.Editor edi = sp.edit();
+                    edi.putStringSet("modified", modifiedSet);
+                    edi.commit();
                     finish();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -437,7 +455,7 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
 
         @Override
         protected Integer doInBackground(String... strings) {
-            unimonList = unimonDatabase.daoAcces().getOwnUnimons(1);
+            unimonList = unimonDatabase.daoAcces().getOwnUnimons(sp.getInt("userid",-1));
             Unimon toRemove = new Unimon();
             for (Unimon uni : unimonList) {
                 if (uni.getReal_id().equals(defeatedUsermon.getReal_id())) {
@@ -467,6 +485,7 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
             Log.e("updateUni", foemon.getNickname());
 
             unimonDatabase.daoAcces().updateUnimon(foemon);
+            modifiedSet.add(usermon.getUnimonid()+"");
             return 0;
         }
     }
@@ -481,6 +500,7 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
             String real_id = foemon.getOwnerid() + "-" +id;
             foemon.setReal_id(real_id);
             foemon.setUnimonid((int) unimonDatabase.daoAcces().insertUnimon(foemon));
+            modifiedSet.add(usermon.getUnimonid()+"");
             return 0;
         }
     }
@@ -490,6 +510,7 @@ public class BattleActivity extends AppCompatActivity implements SwitchUnimonDia
         protected Integer doInBackground(String... strings) {
             System.out.println(usermon.getUnimonid());
             unimonDatabase.daoAcces().updateUnimon(usermon);
+            modifiedSet.add(usermon.getUnimonid()+"");
             return 0;
         }
     }

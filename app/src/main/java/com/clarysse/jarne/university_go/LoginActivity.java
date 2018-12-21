@@ -2,7 +2,9 @@ package com.clarysse.jarne.university_go;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -53,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
     private ApiCallsInterface apiCallsInterface;
     private Retrofit retrofit;
     String ip2;
+    private WifiBroadCastReceiver broadCastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +76,10 @@ public class LoginActivity extends AppCompatActivity {
                 handleSignInResult(task);
             }
         });
+
+        broadCastReceiver = new WifiBroadCastReceiver();
+
+        this.registerReceiver(broadCastReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         /*signinlabel = findViewById(R.id.loginlabel);
         logoutButton = findViewById(R.id.logoutbutton);
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -101,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(intent);
+                finish();
             }
         });
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
@@ -131,6 +139,7 @@ public class LoginActivity extends AppCompatActivity {
         if(result==200){
             Intent intent = new Intent(this, MainMenuActivity.class);
             startActivity(intent);
+            finish();
         }
         else if(result == 409){
             CharSequence message = "Wrong password or email adres";
@@ -149,17 +158,9 @@ public class LoginActivity extends AppCompatActivity {
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+
     }
 
-    private void signOut() {
-        mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
-                    }
-                });
-    }
 
     @Override
     protected void onStart() {
@@ -199,35 +200,6 @@ public class LoginActivity extends AppCompatActivity {
             Log.e("token", idToken);
             new TaskGoogleLogin().execute(idToken);
 
-            /*
-            try {
-                URL url = new URL("http://127.0.0.1:5000/");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setDoOutput(true);
-                conn.setChunkedStreamingMode(0);
-                //OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-
-
-                //InputStream in = new BufferedInputStream(conn.getInputStream());
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (ProtocolException e) {
-                Log.e("sign in", "Error sending ID token to backend.", e);
-            } catch (IOException e) {
-                Log.e("sign in", "Error sending ID token to backend.", e);
-            }*/
-
-/*
-                List nameValuePairs = new ArrayList(1);
-                nameValuePairs.add(new BasicNameValuePair("idToken", idToken));
-                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-                HttpResponse response = httpClient.execute(httpPost);
-                int statusCode = response.getStatusLine().getStatusCode();
-                final String responseBody = EntityUtils.toString(response.getEntity());
-*/
-
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
@@ -236,16 +208,6 @@ public class LoginActivity extends AppCompatActivity {
             Log.w("sign-in", "signInResult:failed code=" + e.getStatusCode());
             updateUI(null);
         }
-    }
-
-    private void revokeAccess() {
-        mGoogleSignInClient.revokeAccess()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Log.d("account", "account deleted");
-                    }
-                });
     }
 
     public class TaskGoogleLogin extends AsyncTask<String, Void, Integer> {
@@ -289,8 +251,11 @@ public class LoginActivity extends AppCompatActivity {
                         Log.e("loginTask", "response )))))))))))))))))))))))))))))))))))))" + conn.getResponseMessage());
                         String[] string = sb.toString().substring(6, sb.length()).split("-");
                         SharedPreferences sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                        sp.edit().putInt("userid", Integer.parseInt(string[0]));
-                        sp.edit().putString("sprite", string[1]);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putInt("userid", Integer.parseInt(string[0]));
+                        editor.putString("sprite", string[1]);
+                        editor.commit();
+
                         Log.e("hai", "correct");
                         return 3;
 
@@ -331,6 +296,7 @@ public class LoginActivity extends AppCompatActivity {
             } else if (result == 3) {
                 Intent intent = new Intent(getApplicationContext(), MainMenuActivity.class);
                 startActivity(intent);
+                finish();
             }
         }
     }
@@ -410,8 +376,10 @@ public class LoginActivity extends AppCompatActivity {
                     JSONObject object = new JSONObject(sb.toString());
                     Log.e("json",""+ object.getInt("userid"));
                     SharedPreferences sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                    sp.edit().putInt("userid", object.getInt("userid"));
-                    sp.edit().putString("sprite", object.getString("sprite"));
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putInt("userid", object.getInt("userid"));
+                    editor.putString("sprite", object.getString("sprite"));
+                    editor.commit();
                     return 200;
                 } else {
                     Log.e("loginTask", "response2 " + conn.getResponseMessage());
@@ -473,4 +441,21 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.unregisterReceiver(broadCastReceiver);
+    }
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+        this.registerReceiver(broadCastReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+
+    }
 }

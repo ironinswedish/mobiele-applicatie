@@ -150,6 +150,7 @@ public class RegisterActivity extends AppCompatActivity {
             sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
             sp.edit().putStringSet("token", Collections.singleton(token));
             startActivity(intent);
+            finish();
         }
         else if(result ==-1){
             CharSequence message = "Email adress already in use.";
@@ -291,14 +292,16 @@ public class RegisterActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         String result;
                         result=response.body();
-                        String[] results = result.split("-");
+                        String[] results = result.split("#");
                         if(results[0].equals("Tis ok")){
                             System.out.println("Status is op nul gezet"+results[1]);
                             handleRegister(0,results[1]);
                             SharedPreferences sp;
                             sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                            sp.edit().putString("userid", results[2]);
-                            sp.edit().putString("sprite", results[3]);
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putInt("userid", Integer.parseInt(results[2]));
+                            editor.putString("sprite", results[3]);
+                            editor.commit();
                         }
                         else{
                             handleRegister(-1,null);
@@ -319,5 +322,12 @@ public class RegisterActivity extends AppCompatActivity {
 
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

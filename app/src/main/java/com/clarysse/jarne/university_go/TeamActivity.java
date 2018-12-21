@@ -1,7 +1,9 @@
 package com.clarysse.jarne.university_go;
 
 import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,12 +32,15 @@ public class TeamActivity extends AppCompatActivity {
     private List<Unimon> unimonList;
     private List<Event> eventList;
     private List<Integer> caughtList;
+    private SharedPreferences sp;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team);
+
+        sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         teamlist = findViewById(R.id.teamlist);
 
@@ -86,28 +91,22 @@ public class TeamActivity extends AppCompatActivity {
             convertView = getLayoutInflater().inflate(R.layout.teamentry, null);
             Unimon unimon = unimonList.get(position);
             ImageView imageView = convertView.findViewById(R.id.teamsprite);
-            Event event = eventList.get(unimon.getEventid()-1);
 
+            Event event = eventList.get(unimon.getEventid()-1);
+            imageView.setImageResource(sp.getInt(""+event.getSprite(),0));
+            Log.e("sprite", ""+event.getSprite());
             TextView nickname = convertView.findViewById(R.id.entrynumber);
             Log.e("teamlist", ""+unimon.getNickname());
             nickname.setText(unimon.getNickname());
 
             TextView level = convertView.findViewById(R.id.realname);
-            level.setText(""+unimon.getLevel());
+            level.setText("lv: "+unimon.getLevel());
             TextView totalhpvalue = convertView.findViewById(R.id.catchamount);
-            totalhpvalue.setText(""+event.getBase_health()*unimon.getLevel()/50);
+            totalhpvalue.setText("HP: "+event.getBase_health()*unimon.getLevel()/50);
             TextView type = convertView.findViewById(R.id.type);
-            type.setText(event.getType());
+            type.setText("Type: "+event.getType());
             TextView experience = convertView.findViewById(R.id.experience);
-            experience.setText(""+unimon.getExp());
-            final Intent intent = new Intent(convertView.getContext(), TeamPageActivity.class);
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("list", "image clicked");
-                    startActivity(intent);
-                }
-            });
+            experience.setText("Exp: "+unimon.getExp());
             return convertView;
         }
 
@@ -134,23 +133,18 @@ public class TeamActivity extends AppCompatActivity {
             Event event = eventList.get(position);
             convertView = getLayoutInflater().inflate(R.layout.unidexentry, null);
             ImageView imageView = convertView.findViewById(R.id.teamsprite);
+            Log.e("sprite", ""+event.getSprite());
+            imageView.setImageResource(sp.getInt(""+event.getSprite(),0));
             TextView entrynumber = convertView.findViewById(R.id.entrynumber);
-            entrynumber.setText(""+event.getEventid());
+            entrynumber.setText("No: "+event.getEventid());
             TextView naam = convertView.findViewById(R.id.realname);
             naam.setText(event.getNaam());
             TextView caught = convertView.findViewById(R.id.catchamount);
-            caught.setText(""+caughtList.get(position));
+            caught.setText("Caught: "+caughtList.get(position));
             TextView type = convertView.findViewById(R.id.type);
-            type.setText(event.getType());
+            type.setText("Type: "+event.getType());
 
-            final Intent intent = new Intent(convertView.getContext(), UniDexPageActivity.class);
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("list", "image clicked");
-                    startActivity(intent);
-                }
-            });
+
             return convertView;
         }
     }
@@ -159,11 +153,12 @@ public class TeamActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(String... strings) {
-            unimonList = unimonDatabase.daoAcces().getOwnUnimons(1);
+            SharedPreferences sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            unimonList = unimonDatabase.daoAcces().getOwnUnimons(sp.getInt("userid",-1));
             eventList = unimonDatabase.daoAcces().getEvents();
             caughtList = new ArrayList<>();
             for(int i=1;i<eventList.size()+1; i++) {
-                caughtList.add(unimonDatabase.daoAcces().caughtAmount(i,1));
+                caughtList.add(unimonDatabase.daoAcces().caughtAmount(i,sp.getInt("userid",-1)));
             }
 
             return 0;

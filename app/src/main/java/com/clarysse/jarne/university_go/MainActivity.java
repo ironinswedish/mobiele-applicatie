@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         final Intent starterIntent = new Intent(this,LoginActivity.class);
         startActivity(starterIntent);
-
+        finish();
 
 
 /*
@@ -112,39 +112,6 @@ public class MainActivity extends AppCompatActivity {
     */
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            LocalBinder binder = (LocalBinder) service;
-            locationService = binder.getService();
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            bound = false;
-        }
-    };
-
-    public void sendMessage(View view) {
-        System.out.println("Gewoon een test");
-    }
-
-    @Override
-    protected void onDestroy() {
-        Intent startservice;
-        Intent startdbservice;
-        startservice = new Intent(this, LocationService.class);
-        if (bound) {
-            unbindService(mConnection);
-            bound = false;
-        }
-        startdbservice = new Intent(this, LocationService.class);
-        stopService(startservice);
-        stopService(startdbservice);
-        super.onDestroy();
-    }
 
 
 }

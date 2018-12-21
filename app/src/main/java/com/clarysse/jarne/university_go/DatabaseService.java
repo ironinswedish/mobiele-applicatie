@@ -53,19 +53,16 @@ public class DatabaseService extends Service {
     private SharedPreferences sp;
     private Iterator<String> setIterator;
     private String modifiedItem;
-    private String[] splitItem;
-    private String userId;
+    private int userId;
     private List<Move> moves;
     private List<Event> events;
     private List<Unimon> unimons;
     private static final String DATABASE_NAME = "movies_db";
     private UnimonDatabase unimonDatabase;
     private Retrofit retrofit;
-    String ip1 = "192.168.1.10";
     String ip2;
     private ApiCallsInterface apiCallsInterface;
-
-
+    private SharedPreferences.Editor editor;
 
 
     public DatabaseService() {
@@ -85,11 +82,12 @@ public class DatabaseService extends Service {
         isRunning = false;
         timer = new Timer();
         sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        editor = sp.edit();
         modified = sp.getStringSet("modified", null);
         lastUpdated = sp.getInt("lastupdated", 0);
-        userId = sp.getString("userid", null);
-        userId = "jap";
-        Log.e("dbservice",userId);
+        userId = sp.getInt("userid", -1);
+
+        Log.e("dbservice",""+userId);
         unimonDatabase = Room.databaseBuilder(getApplicationContext(), UnimonDatabase.class, DATABASE_NAME)
                 .fallbackToDestructiveMigration()
                 .build();
@@ -106,18 +104,18 @@ public class DatabaseService extends Service {
                 @Override
                 public void run() {
                     if (checkWifiOnAndConnected()) {
+                        modified = sp.getStringSet("modified", null);
                         updateRoom();
                         if(modified!=null) {
                             new pushUnimonModifications().execute();
-                            sp.edit().putStringSet("modified", null);
+
                         }
                     }
                 }
             };
-
-            new pushUnimonModifications().execute();
             Log.e("sp", "unimonpushed");
             timer.schedule(timertask, new Date(), 5000);
+
         }
 
         return START_STICKY;
@@ -157,25 +155,17 @@ public class DatabaseService extends Service {
         protected Integer doInBackground(String... strings) {
 
             List<Unimon> modifiedUnimon = new ArrayList<>();
-            /*setIterator = modified.iterator();
+            setIterator = modified.iterator();
             while (setIterator.hasNext()) {
                 modifiedItem = setIterator.next();
                 modifiedUnimon.add(unimonDatabase.daoAcces().getUnimonById(Integer.parseInt(modifiedItem)));
-            }*/
-            Unimon uni = new Unimon();
-            uni.setExp(51);
-            uni.setLevel(40);
-            uni.setNickname("heya");
-            uni.setReal_id("2-1");
-            uni.setOwnerid(2);
-            uni.setEventid(3);
-            modifiedUnimon.add(uni);
+            }
+
+
             GsonBuilder builder = new GsonBuilder();
             builder.serializeNulls();
             Gson gson = builder.create();
-            gson.toJson(modifiedUnimon);
-            String ip1 = "192.168.1.10";
-            String ip2 = "http://192.168.1.10:5000";
+
             Type collectionType = new TypeToken<Collection<Unimon>>(){}.getType();
             Call<String> unimonCall = apiCallsInterface.updateunimon(gson.toJsonTree(modifiedUnimon,collectionType).getAsJsonArray());
             try {
@@ -189,42 +179,8 @@ public class DatabaseService extends Service {
                 e.printStackTrace();
             }
 
-
-            /*try {
-                URL url = new URL("http://10.108.19.9:5000/updateunimon");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
-
-                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                conn.setRequestProperty("Accept", "application/json");
-
-                OutputStream os = conn.getOutputStream();
-                os.write(gson.toJson(modifiedUnimon).getBytes("UTF-8"));
-                os.close();
-
-                StringBuilder sb = new StringBuilder();
-                int HttpResult = conn.getResponseCode();
-                if (HttpResult == HttpURLConnection.HTTP_OK) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-                    String line = null;
-                    while ((line = br.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    br.close();
-                    Log.e("loginTask", "response " + sb.toString());
-                } else {
-                    Log.e("loginTask", "response " + conn.getResponseMessage());
-                }
-                conn.disconnect();
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
+            editor.putStringSet("modified", null);
+            editor.commit();
 
             return 0;
         }
@@ -304,8 +260,8 @@ public class DatabaseService extends Service {
                     Log.e("move", "did not receive all moves");
                 }
 
-                if(userId!=null) {
-                    Call<List<Unimon>> unimonCall = apiCallsInterface.getOwnUnimons(userId);
+                if(userId!=-1) {
+                    Call<List<Unimon>> unimonCall = apiCallsInterface.getOwnUnimons(""+userId);
                     Response<List<Unimon>> responseUnimon = unimonCall.execute();
                     if (responseUnimon.isSuccessful()) {
                         unimons = responseUnimon.body();
@@ -320,10 +276,6 @@ public class DatabaseService extends Service {
 
 
 
-                /*OutputStream os = conn.getOutputStream();
-                os.write(credObject.toString().getBytes("UTF-8"));
-                os.close();*/
-
                 return 0;
             } catch (Exception e) {
                 Log.e("loginTask", "something went wrong", e);
@@ -334,83 +286,11 @@ public class DatabaseService extends Service {
 
     }
 
-    private void setupConnection(URL url, String type) throws IOException, JSONException {
 
-
-        /*HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-        conn.setRequestMethod("GET");
-        Log.e("dbservice", conn.getRequestMethod());
-        conn.setDoOutput(true);
-        conn.setDoInput(true);
-
-        conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-        conn.setRequestProperty("Accept", "application/json");
-
-        StringBuilder sb = new StringBuilder();
-        int HttpResult = conn.getResponseCode();
-        if (HttpResult == HttpURLConnection.HTTP_OK) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            br.close();
-            if (type.equals("move")) {
-                moves = new JSONObject(sb.toString());
-                updateMoves();
-                moves = null;
-            } else if (type.equals("unimon")) {
-                unimons = new JSONObject(sb.toString());
-                updateUnimon();
-                unimons = null;
-            } else if (type.equals("event")) {
-                events = new JSONObject(sb.toString());
-                updateEvents();
-                events = null;
-            }
-
-            Log.e("loginTask", "response " + sb.toString());
-        } else {
-            Log.e("loginTask", "response " + conn.getResponseMessage());
-        }
-        conn.disconnect();
-        */
+    @Override
+    public void onDestroy() {
+        timer.cancel();
+        super.onDestroy();
+        Log.e("databaseservice", "destroyed");
     }
-
-
-
-
-    public void updateMoves() {
-        //jsonobject move
-        ArrayList<Move> movelist = new Gson().fromJson(moves.toString(), ArrayList.class);
-        for (Move move : movelist) {
-            System.out.println(move.getMoveid());
-        }
-        unimonDatabase.daoAcces().insertMultipleMoves(movelist);
-        moves = null;
-    }
-
-    public void updateEvents() {
-        //jsonobject event
-        ArrayList<Event> eventlist = new Gson().fromJson(events.toString(), ArrayList.class);
-        for (Event event : eventlist) {
-            System.out.println(event.getEventid());
-        }
-        unimonDatabase.daoAcces().insertMultipleEvent(eventlist);
-        events = null;
-
-
-    }
-
-    public void updateUnimon() {
-        //jsonobject Unimon
-        ArrayList<Unimon> unimonlist = new Gson().fromJson(unimons.toString(), ArrayList.class);
-        for (Unimon unimon : unimonlist) {
-            System.out.println(unimon.getUnimonid());
-        }
-        unimonDatabase.daoAcces().insertMultipleUnimons(unimonlist);
-        unimons = null;
-    }
-
 }

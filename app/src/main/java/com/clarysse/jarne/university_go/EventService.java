@@ -36,7 +36,7 @@ public class EventService extends Service {
     private static ArrayList<Encounter> nearbyEncounterList;
     private static final String DATABASE_NAME = "movies_db";
     private UnimonDatabase unimonDatabase;
-    private String userId;
+    private int userId;
 
 
     private final IBinder mBinder = new EventService.LocalBinder();
@@ -91,8 +91,8 @@ public class EventService extends Service {
                 //deze unimon geeft geen id en wordt pas gepushed wanneer hij gevangen is
                 Unimon randomUnimon = new Unimon();
                 randomUnimon.setEventid(unimonEvent.getEventid());
-                randomUnimon.setOwnerid(Integer.parseInt(userId));
-                randomUnimon.setLevel(random.nextInt(50)+1);
+                randomUnimon.setOwnerid(userId);
+                randomUnimon.setLevel(random.nextInt(15)+1);
                 randomUnimon.setNickname(unimonEvent.getNaam());
                 randomUnimon.setExp((int) Math.round(20 * Math.pow(1.5, randomUnimon.getLevel())));
 
@@ -146,7 +146,7 @@ public class EventService extends Service {
                 .fallbackToDestructiveMigration()
                 .build();
         sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        userId = sp.getString("userid", null);
+        userId = sp.getInt("userid", -1);
 
         startservice = new Intent(this, LocationService.class);
         if (!bound) {

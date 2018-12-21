@@ -68,7 +68,7 @@ public class Event {
     }
 
     public void setSprite(int sprite) {
-        sprite = sprite;
+        this.sprite = sprite;
     }
 
     public String getMoveset() {
